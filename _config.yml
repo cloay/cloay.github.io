@@ -3,9 +3,9 @@
 # ----------------------- #
 
 url: http://cloay.github.io
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: Cloay's blog! 
+subtitle: Welcome to cloay's blog!
+author: Cloay 
 simple_search: http://google.com/search
 description:
 
@@ -63,13 +63,13 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/delicious.
 # ----------------------- #
 
 # Github repositories
-github_user:
+github_user: cloay
 github_repo_count: 0
 github_show_profile_link: true
 github_skip_forks: true
 
 # Twitter
-twitter_user:
+twitter_user: cloay
 twitter_tweet_button: true
 
 # Google +1
@@ -98,3 +98,7 @@ google_analytics_tracking_id:
 
 # Facebook Like
 facebook_like: false
+
+# duoshuo comments
+duoshuo_comments: true
+duoshuo_short_name: cloay
