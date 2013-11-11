@@ -2,12 +2,12 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://cloay.com
+url: http://cloay.github.io
 title: Cloay's blog! 
-subtitle: Welcome to cloay's blog!
+subtitle: Some people want it to happen, some wish it would happen, others make it happen. 
 author: Cloay 
 simple_search: http://google.com/search
-description:
+description: This is cloay's person blog.
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
@@ -64,7 +64,7 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/delicious.
 
 # Github repositories
 github_user: cloay
-github_repo_count: 0
+github_repo_count: 3 
 github_show_profile_link: true
 github_skip_forks: true
 
