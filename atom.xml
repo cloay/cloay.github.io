@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Cloay's blog!]]></title>
-  <link href="http://cloay.github.io/atom.xml" rel="self"/>
-  <link href="http://cloay.github.io/"/>
-  <updated>2013-11-11T18:50:12+08:00</updated>
-  <id>http://cloay.github.io/</id>
+  <link href="http://cloay.com/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2013-11-11T18:55:26+08:00</updated>
+  <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hello world !]]></title>
-    <link href="http://cloay.github.io/blog/2013/11/11/hello-world/"/>
+    <link href="http://cloay.com/blog/2013/11/11/hello-world/"/>
     <updated>2013-11-11T18:33:00+08:00</updated>
-    <id>http://cloay.github.io/blog/2013/11/11/hello-world</id>
+    <id>http://cloay.com/blog/2013/11/11/hello-world</id>
     <content type="html"><![CDATA[<h2>Hello world !</h2>
 
 
