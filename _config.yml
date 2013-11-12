@@ -70,7 +70,11 @@ github_skip_forks: true
 
 # Twitter
 twitter_user: cloay
-twitter_tweet_button: true
+twitter_tweet_button: false
+
+# WeiBo
+weibo_user: cloay
+
 
 # Google +1
 google_plus_one: false
