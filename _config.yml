@@ -69,10 +69,10 @@ github_show_profile_link: true
 github_skip_forks: true
 
 # Twitter
-twitter_user: cloay
-twitter_tweet_button: false
+# twitter_user: cloay
+# twitter_tweet_button: false
 
-# WeiBo
+# Weibo
 weibo_user: cloay
 
 
