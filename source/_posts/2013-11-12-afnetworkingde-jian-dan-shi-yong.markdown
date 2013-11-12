@@ -6,7 +6,7 @@ comments: true
 categories: afnetworking,asi,ios,iphone,apple 
 ---
 <p>简单登录使用</p><br>
-<pre class="prettyPrint">
+{% highlight java %}
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
     hud.labelText = @"正在登录...";
     //init params
@@ -45,4 +45,4 @@ categories: afnetworking,asi,ios,iphone,apple
         [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
         [Utils showErrorMsgWithErrorCode:-1];
     }];
-</pre>
+{% endhighlight %}
