@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://cloay.github.io
+url: http//cloay.github.io
 title: Cloay's blog! 
 subtitle: Some people want it to happen, some wish it would happen, others make it happen.
 author: Cloay 
@@ -19,7 +19,7 @@ date_format: "ordinal"
 subscribe_rss: /atom.xml
 subscribe_email: shangrody@gmail.com
 # RSS feeds can list your email address if you like
-email:
+email: shangrody@gmail.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
