@@ -9,8 +9,7 @@
 	<meta name="author" content="Cloay">
 
 	
-	<meta name="description" content=" Nov 11th, 2013 Hello World ! Hello world ! This is a test! Blog Archives
-">
+	<meta name="description" content="Nov 12th, 2013 afnetworking,asi,ios,iphone,apple AFNetworking的简单使用 简单登录使用 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -117,6 +116,85 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-12T15:01:00+08:00" data-updated="true" itemprop="datePublished">Nov 12<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/afnetworking-asi-ios-iphone-apple/'>afnetworking,asi,ios,iphone,apple</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/" itemprop="url">AFNetworking的简单使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>简单登录使用</p>
+
+
+<br>
+
+
+<pre><code>MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+hud.labelText = @"正在登录...";
+//init params
+NSDictionary *parameters = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"login", nameTextField.text, passwordTextField.text, @"anonymous", nil] forKeys:[NSArray arrayWithObjects:@"cmd", @"login_name", @"password", @"access_token", nil]];
+
+AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+manager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
+DLog(@"parmeters:%@", parameters);
+AFJSONRequestSerializer *jsonSerializer = [AFJSONRequestSerializer serializerWithWritingOptions:NSJSONWritingPrettyPrinted];
+manager.requestSerializer = jsonSerializer;
+
+[manager POST:SERVER parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    DLog(@"JSON: %@", responseObject);
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    if ([responseObject objectForKey:@"error"]) {
+        int errorCode = [[responseObject objectForKey:@"error_code"] integerValue];
+        [Utils showErrorMsgWithErrorCode:errorCode];
+        return;
+    }
+    NSDictionary *accountDic = [responseObject objectForKey:@"account"];
+    if (accountDic) {
+        appAccount = [Account jsonToAccount:responseObject];
+
+        MainVC *mainVc = [[MainVC alloc] init];
+        [self.navigationController pushViewController:mainVc animated:YES];
+
+        [Utils HUDShowMsg:[UIApplication sharedApplication].keyWindow msg:@"登录成功！" withDelay:2];
+    }else{
+        [Utils HUDShowMsg:[UIApplication sharedApplication].keyWindow msg:@"登录失败，请稍候重试！" withDelay:2];
+    }
+
+} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    DLog(@"Error: %@", error);
+    [MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+    [Utils showErrorMsgWithErrorCode:-1];
+}];
+</code></pre>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
