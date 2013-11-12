@@ -3,7 +3,7 @@ layout: post
 title: "AFNetworking的简单使用"
 date: 2013-11-12 15:01
 comments: true
-categories: afnetworking,asi,ios,iphone,apple 
+categories: afnetworking, asi, ios, iphone, apple 
 ---
 <p>简单登录使用</p><br>
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
