@@ -6,7 +6,7 @@ comments: true
 categories: afnetworking,asi,ios,iphone,apple 
 ---
 <p>简单登录使用</p><br>
-MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
     hud.labelText = @"正在登录...";
     //init params
     NSDictionary *parameters = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"login", nameTextField.text, passwordTextField.text, @"anonymous", nil] forKeys:[NSArray arrayWithObjects:@"cmd", @"login_name", @"password", @"access_token", nil]];
