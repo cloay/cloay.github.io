@@ -4,7 +4,7 @@
   <title><![CDATA[Category: checkout | Cloay's blog!]]></title>
   <link href="http//cloay.github.io/blog/categories/checkout/atom.xml" rel="self"/>
   <link href="http//cloay.github.io/"/>
-  <updated>2013-11-13T14:46:16+08:00</updated>
+  <updated>2013-11-13T14:51:24+08:00</updated>
   <id>http//cloay.github.io/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
@@ -18,7 +18,10 @@
     <link href="http//cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
     <updated>2013-11-13T11:15:00+08:00</updated>
     <id>http//cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
-    <content type="html"><![CDATA[<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
 </code></pre>
 
 <p>如果遇到类似如下问题：</p>

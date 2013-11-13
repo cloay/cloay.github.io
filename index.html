@@ -9,7 +9,7 @@
 	<meta name="author" content="Cloay">
 
 	
-	<meta name="description" content="Nov 13th, 2013 branch, checkout, git, remote Git 拉取远程分支到本地 git checkout -b newbranch_name --track origin/feature/newbranch_name 如果遇到类似如下问题： fatal: &hellip;">
+	<meta name="description" content="Nov 13th, 2013 branch, checkout, git, remote Git 拉取远程分支到本地 Read on &rarr; Nov 12th, 2013 afnetworking,asi,ios,iphone,apple AFNetworking的简单使用 Read on &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -144,37 +144,9 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/" itemprop="url">Git 拉取远程分支到本地</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
-</code></pre>
-
-<p>如果遇到类似如下问题：</p>
-
-
-<pre><code>    fatal: git checkout: updating paths is incompatible with switching branches.
-    Did you intend to checkout 'origin/remote-name' which can not be resolved as commit?
-</code></pre>
-
-<p>使用下面命令</p>
-
-
-<pre><code>    git remote show origin
-    git remote update
-    git fetch
-</code></pre>
-
-<p>再试试</p>
-
-
-<pre><code>    git checkout -b local-name origin/remote-name
-</code></pre>
-
-<p>参考资料:</p>
-
-
-<p> <a href = "http://stackoverflow.com/questions/945654/git-checkout-on-a-remote-branch-does-not-work">Git checkout on a remote branch does not work</a></p>
-
 		
 		
+		<a href="/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/" class="more-link">Read on &rarr;</a>
 	</div>
 
 </article>
@@ -206,93 +178,9 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/" itemprop="url">AFNetworking的简单使用</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		<p>简单登录使用</p>
-
-
-<br>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">MBProgressHUD</span> <span class="o">*</span><span class="n">hud</span> <span class="o">=</span> <span class="p">[</span><span class="n">MBProgressHUD</span> <span class="nl">showHUDAddedTo:</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">animated:</span><span class="n">NO</span><span class="p">];</span>
-</span><span class='line'><span class="n">hud</span><span class="p">.</span><span class="n">labelText</span> <span class="o">=</span> <span class="s">@&quot;正在登录...&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="c1">//init params</span>
-</span><span class='line'><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSDictionary</span> <span class="nl">dictionaryWithObjects:</span><span class="p">[</span><span class="n">NSArray</span> <span class="nl">arrayWithObjects:</span><span class="s">@&quot;login&quot;</span><span class="p">,</span> <span class="n">nameTextField</span><span class="p">.</span><span class="n">text</span><span class="p">,</span> <span class="n">passwordTextField</span><span class="p">.</span><span class="n">text</span><span class="p">,</span> <span class="s">@&quot;anonymous&quot;</span><span class="p">,</span> <span class="nb">nil</span><span class="p">]</span> <span class="nl">forKeys:</span><span class="p">[</span><span class="n">NSArray</span> <span class="nl">arrayWithObjects:</span><span class="s">@&quot;cmd&quot;</span><span class="p">,</span> <span class="s">@&quot;login_name&quot;</span><span class="p">,</span> <span class="s">@&quot;password&quot;</span><span class="p">,</span> <span class="s">@&quot;access_token&quot;</span><span class="p">,</span> <span class="nb">nil</span><span class="p">]];</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">AFHTTPRequestOperationManager</span> <span class="o">*</span><span class="n">manager</span> <span class="o">=</span> <span class="p">[</span><span class="n">AFHTTPRequestOperationManager</span> <span class="n">manager</span><span class="p">];</span>
-</span><span class='line'><span class="n">manager</span><span class="p">.</span><span class="n">responseSerializer</span> <span class="o">=</span> <span class="p">[</span><span class="n">AFJSONResponseSerializer</span> <span class="n">serializer</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">manager</span><span class="p">.</span><span class="n">responseSerializer</span><span class="p">.</span><span class="n">acceptableContentTypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSSet</span> <span class="nl">setWithObject:</span><span class="s">@&quot;text/html&quot;</span><span class="p">];</span>
-</span><span class='line'><span class="n">DLog</span><span class="p">(</span><span class="s">@&quot;parmeters:%@&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">);</span>
-</span><span class='line'><span class="n">AFJSONRequestSerializer</span> <span class="o">*</span><span class="n">jsonSerializer</span> <span class="o">=</span> <span class="p">[</span><span class="n">AFJSONRequestSerializer</span> <span class="nl">serializerWithWritingOptions:</span><span class="n">NSJSONWritingPrettyPrinted</span><span class="p">];</span>
-</span><span class='line'><span class="n">manager</span><span class="p">.</span><span class="n">requestSerializer</span> <span class="o">=</span> <span class="n">jsonSerializer</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">[</span><span class="n">manager</span> <span class="nl">POST:</span><span class="n">SERVER</span> <span class="nl">parameters:</span><span class="n">parameters</span> <span class="nl">success:</span><span class="o">^</span><span class="p">(</span><span class="n">AFHTTPRequestOperation</span> <span class="o">*</span><span class="n">operation</span><span class="p">,</span> <span class="kt">id</span> <span class="n">responseObject</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">DLog</span><span class="p">(</span><span class="s">@&quot;JSON: %@&quot;</span><span class="p">,</span> <span class="n">responseObject</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">MBProgressHUD</span> <span class="nl">hideAllHUDsForView:</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">animated:</span><span class="n">YES</span><span class="p">];</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">responseObject</span> <span class="nl">objectForKey:</span><span class="s">@&quot;error&quot;</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kt">int</span> <span class="n">errorCode</span> <span class="o">=</span> <span class="p">[[</span><span class="n">responseObject</span> <span class="nl">objectForKey:</span><span class="s">@&quot;error_code&quot;</span><span class="p">]</span> <span class="n">integerValue</span><span class="p">];</span>
-</span><span class='line'>        <span class="p">[</span><span class="n">Utils</span> <span class="nl">showErrorMsgWithErrorCode:</span><span class="n">errorCode</span><span class="p">];</span>
-</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="n">NSDictionary</span> <span class="o">*</span><span class="n">accountDic</span> <span class="o">=</span> <span class="p">[</span><span class="n">responseObject</span> <span class="nl">objectForKey:</span><span class="s">@&quot;account&quot;</span><span class="p">];</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">accountDic</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">appAccount</span> <span class="o">=</span> <span class="p">[</span><span class="n">Account</span> <span class="nl">jsonToAccount:</span><span class="n">responseObject</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">MainVC</span> <span class="o">*</span><span class="n">mainVc</span> <span class="o">=</span> <span class="p">[[</span><span class="n">MainVC</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
-</span><span class='line'>        <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">navigationController</span> <span class="nl">pushViewController:</span><span class="n">mainVc</span> <span class="nl">animated:</span><span class="n">YES</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="p">[</span><span class="n">Utils</span> <span class="nl">HUDShowMsg:</span><span class="p">[</span><span class="n">UIApplication</span> <span class="n">sharedApplication</span><span class="p">].</span><span class="n">keyWindow</span> <span class="nl">msg:</span><span class="s">@&quot;登录成功！&quot;</span> <span class="nl">withDelay:</span><span class="mi">2</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span><span class='line'>        <span class="p">[</span><span class="n">Utils</span> <span class="nl">HUDShowMsg:</span><span class="p">[</span><span class="n">UIApplication</span> <span class="n">sharedApplication</span><span class="p">].</span><span class="n">keyWindow</span> <span class="nl">msg:</span><span class="s">@&quot;登录失败，请稍候重试！&quot;</span> <span class="nl">withDelay:</span><span class="mi">2</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span> <span class="nl">failure:</span><span class="o">^</span><span class="p">(</span><span class="n">AFHTTPRequestOperation</span> <span class="o">*</span><span class="n">operation</span><span class="p">,</span> <span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">DLog</span><span class="p">(</span><span class="s">@&quot;Error: %@&quot;</span><span class="p">,</span> <span class="n">error</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">MBProgressHUD</span> <span class="nl">hideAllHUDsForView:</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">animated:</span><span class="n">YES</span><span class="p">];</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">Utils</span> <span class="nl">showErrorMsgWithErrorCode:</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
-</span><span class='line'><span class="p">}];</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
 		
 		
+		<a href="/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/" class="more-link">Read on &rarr;</a>
 	</div>
 
 </article>
