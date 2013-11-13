@@ -94,8 +94,8 @@ delicious_user:
 delicious_count: 3
 
 # Disqus Comments
-disqus_short_name:
-disqus_show_comment_count: false
+disqus_short_name: cloay
+disqus_show_comment_count: 5 
 
 # Google Analytics
 google_analytics_tracking_id: UA-45666042-1
@@ -104,5 +104,5 @@ google_analytics_tracking_id: UA-45666042-1
 facebook_like: true 
 
 # duoshuo comments
-duoshuo_comments: true
+duoshuo_comments: false 
 duoshuo_short_name: cloay
