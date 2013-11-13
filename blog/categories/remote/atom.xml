@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: remote | Cloay's blog!]]></title>
-  <link href="http//cloay.github.io/blog/categories/remote/atom.xml" rel="self"/>
-  <link href="http//cloay.github.io/"/>
-  <updated>2013-11-13T15:21:20+08:00</updated>
-  <id>http//cloay.github.io/</id>
+  <link href="http://cloay.github.io/blog/categories/remote/atom.xml" rel="self"/>
+  <link href="http://cloay.github.io/"/>
+  <updated>2013-11-13T16:44:05+08:00</updated>
+  <id>http://cloay.github.io/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
     <email><![CDATA[shangrody@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[git 拉取远程分支到本地]]></title>
-    <link href="http//cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
+    <link href="http://cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
     <updated>2013-11-13T11:15:00+08:00</updated>
-    <id>http//cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
+    <id>http://cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
     <content type="html"><![CDATA[<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
 </code></pre>
 
