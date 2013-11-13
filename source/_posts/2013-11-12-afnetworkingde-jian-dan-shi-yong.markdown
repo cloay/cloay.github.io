@@ -5,8 +5,8 @@ date: 2013-11-12 15:01
 comments: true
 categories: afnetworking,asi,ios,iphone,apple 
 ---
-<!-- more -->
 <p>简单登录使用</p><br>
+<!-- more -->
 ``` objective-c
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
     hud.labelText = @"正在登录...";

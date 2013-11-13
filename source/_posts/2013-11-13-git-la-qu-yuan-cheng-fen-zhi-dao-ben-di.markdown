@@ -5,11 +5,11 @@ date: 2013-11-13 11:15
 comments: true
 categories: git checkout remote branch 
 ---
-<!-- more -->
         git checkout -b newbranch_name --track origin/feature/newbranch_name
 <p>如果遇到类似如下问题：</p>
         fatal: git checkout: updating paths is incompatible with switching branches.
         Did you intend to checkout 'origin/remote-name' which can not be resolved as commit?
+<!-- more -->
 <p>使用下面命令</p>
         git remote show origin
         git remote update
