@@ -9,34 +9,7 @@
 	<meta name="author" content="Cloay">
 
 	
-	<meta name="description" content="Nov 12th, 2013 afnetworking,asi,ios,iphone,apple AFNetworking的简单使用 简单登录使用 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28 &hellip;">
+	<meta name="description" content="Nov 13th, 2013 Git 拉取远程分支到本地 git checkout -b newbranch_name --track origin/feature/newbranch_name 如果遇到类似如下问题： fatal: git checkout: updating paths is &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -143,6 +116,64 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-13T11:15:00+08:00" data-updated="true" itemprop="datePublished">Nov 13<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/" itemprop="url">Git 拉取远程分支到本地</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
+</code></pre>
+
+<p>如果遇到类似如下问题：</p>
+
+
+<pre><code>    fatal: git checkout: updating paths is incompatible with switching branches.
+    Did you intend to checkout 'origin/remote-name' which can not be resolved as commit?
+</code></pre>
+
+<p>使用下面命令</p>
+
+
+<pre><code>    git remote show origin
+    git remote update
+    git fetch
+</code></pre>
+
+<p>再试试</p>
+
+
+<pre><code>    git checkout -b local-name origin/remote-name
+</code></pre>
+
+<p>参考资料:</p>
+
+
+<p> <a href = "http://stackoverflow.com/questions/945654/git-checkout-on-a-remote-branch-does-not-work">Git checkout on a remote branch does not work</a></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
