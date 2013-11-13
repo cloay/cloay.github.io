@@ -4,7 +4,7 @@
   <title><![CDATA[Cloay's blog!]]></title>
   <link href="http//cloay.github.io/atom.xml" rel="self"/>
   <link href="http//cloay.github.io/"/>
-  <updated>2013-11-13T14:51:24+08:00</updated>
+  <updated>2013-11-13T14:58:56+08:00</updated>
   <id>http//cloay.github.io/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
@@ -18,10 +18,7 @@
     <link href="http//cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
     <updated>2013-11-13T11:15:00+08:00</updated>
     <id>http//cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
+    <content type="html"><![CDATA[<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
 </code></pre>
 
 <p>如果遇到类似如下问题：</p>
@@ -30,6 +27,9 @@
 <pre><code>    fatal: git checkout: updating paths is incompatible with switching branches.
     Did you intend to checkout 'origin/remote-name' which can not be resolved as commit?
 </code></pre>
+
+<!-- more -->
+
 
 <p>使用下面命令</p>
 
@@ -57,13 +57,13 @@
     <link href="http//cloay.github.io/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/"/>
     <updated>2013-11-12T15:01:00+08:00</updated>
     <id>http//cloay.github.io/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<p>简单登录使用</p>
+    <content type="html"><![CDATA[<p>简单登录使用</p>
 
 
 <br>
+
+
+<!-- more -->
 
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>

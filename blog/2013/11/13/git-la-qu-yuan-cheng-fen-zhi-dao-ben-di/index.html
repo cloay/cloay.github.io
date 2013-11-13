@@ -116,10 +116,7 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 	<h1 class="title" itemprop="name">Git 拉取远程分支到本地</h1>
-	<div class="entry-content" itemprop="articleBody"><!-- more -->
-
-
-<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
+	<div class="entry-content" itemprop="articleBody"><pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
 </code></pre>
 
 <p>如果遇到类似如下问题：</p>
@@ -128,6 +125,9 @@
 <pre><code>    fatal: git checkout: updating paths is incompatible with switching branches.
     Did you intend to checkout 'origin/remote-name' which can not be resolved as commit?
 </code></pre>
+
+<!-- more -->
+
 
 <p>使用下面命令</p>
 
