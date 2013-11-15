@@ -4,7 +4,7 @@
   <title><![CDATA[Cloay's blog!]]></title>
   <link href="http://cloay.github.io/atom.xml" rel="self"/>
   <link href="http://cloay.github.io/"/>
-  <updated>2013-11-15T11:53:04+08:00</updated>
+  <updated>2013-11-15T14:58:06+08:00</updated>
   <id>http://cloay.github.io/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
@@ -12,6 +12,74 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Homebrew的安装和使用]]></title>
+    <link href="http://cloay.github.io/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong/"/>
+    <updated>2013-11-15T14:33:00+08:00</updated>
+    <id>http://cloay.github.io/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong</id>
+    <content type="html"><![CDATA[<h3>Homebrew 是什么</h3>
+
+
+<br>
+
+
+<p>官网是这样说的：<br></p>
+
+<p>在 OS X 中找不到您想要的软件？Homebrew 给你所需。<br>Homebrew 将软件包分装到单独的目录，然后 symlink 到 /usr/local 中。</p>
+
+
+<!-- more -->
+
+
+<p>轻松创建您自己的 Homebrew 软件包。
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">brew</span> <span class="n">create</span> <span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="n">foo</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">bar</span><span class="o">-</span><span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="n">tgz</span>
+</span><span class='line'><span class="no">Created</span> <span class="sr">/usr/</span><span class="n">local</span><span class="o">/</span><span class="no">Library</span><span class="o">/</span><span class="no">Formula</span><span class="o">/</span><span class="n">bar</span><span class="o">.</span><span class="n">rb</span>
+</span></code></pre></td></tr></table></div></figure>
+完全基于 git 和 ruby，您可以很方便地撤销、更改或合并上流的更新。</p>
+
+
+<br>
+
+
+<h3>安装 Homebrew</h3>
+
+
+<p>打开 Terminal, 复制并粘贴:</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">ruby</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<br>
+
+
+<h3>Homebrew 使用</h3>
+
+
+<p>查看寻找自己的包</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">brew</span> <span class="n">search</span> <span class="sr">//</span><span class="o">+</span><span class="n">keyword</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装包</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">brew</span> <span class="n">install</span> <span class="sr">//</span> <span class="o">+</span> <span class="err">包名</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[git 拉取远程分支到本地]]></title>
