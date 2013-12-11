@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Cloay's blog!]]></title>
-  <link href="http://cloay.github.io/atom.xml" rel="self"/>
-  <link href="http://cloay.github.io/"/>
-  <updated>2013-11-21T10:57:26+08:00</updated>
-  <id>http://cloay.github.io/</id>
+  <link href="http://cloay.com/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2013-12-11T09:22:33+08:00</updated>
+  <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
     <email><![CDATA[shangrody@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Homebrew的安装和使用]]></title>
-    <link href="http://cloay.github.io/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong/"/>
+    <link href="http://cloay.com/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong/"/>
     <updated>2013-11-15T14:33:00+08:00</updated>
-    <id>http://cloay.github.io/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong</id>
+    <id>http://cloay.com/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong</id>
     <content type="html"><![CDATA[<h3>Homebrew 是什么</h3>
 
 
@@ -83,9 +83,9 @@
   
   <entry>
     <title type="html"><![CDATA[git 拉取远程分支到本地]]></title>
-    <link href="http://cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
+    <link href="http://cloay.com/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
     <updated>2013-11-13T11:15:00+08:00</updated>
-    <id>http://cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
+    <id>http://cloay.com/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
     <content type="html"><![CDATA[<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
 </code></pre>
 
@@ -122,9 +122,9 @@
   
   <entry>
     <title type="html"><![CDATA[AFNetworking的简单使用]]></title>
-    <link href="http://cloay.github.io/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/"/>
+    <link href="http://cloay.com/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/"/>
     <updated>2013-11-12T15:01:00+08:00</updated>
-    <id>http://cloay.github.io/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong</id>
+    <id>http://cloay.com/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong</id>
     <content type="html"><![CDATA[<p>简单登录使用</p>
 
 
@@ -217,9 +217,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hello world !]]></title>
-    <link href="http://cloay.github.io/blog/2013/11/11/hello-world/"/>
+    <link href="http://cloay.com/blog/2013/11/11/hello-world/"/>
     <updated>2013-11-11T18:33:00+08:00</updated>
-    <id>http://cloay.github.io/blog/2013/11/11/hello-world</id>
+    <id>http://cloay.com/blog/2013/11/11/hello-world</id>
     <content type="html"><![CDATA[<h2>Hello world !</h2>
 
 
