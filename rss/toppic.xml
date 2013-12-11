@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
 <channel>
@@ -6,7 +7,7 @@
 	<description>图片头条</description>
 	<language>zh-cn</language>
             <item>
-                <title>测试</title>
+                <title>曼德拉官方追悼会举行 政要名流齐聚</title>
                 <links>
             <link>http://img6.cache.netease.com/photo/0001/2013-12-10/9FOMOFB500AO0001.jpg</link>
             <link>http://img2.cache.netease.com/photo/0001/2013-12-10/900x600_9FOITTUH00AO0001.jpg</link>
@@ -19,7 +20,7 @@
             <link>http://img6.cache.netease.com/photo/0001/2013-12-10/900x600_9FOMOGRD00AO0001.jpg</link>
         </links>
                 <category><![CDATA[]]></category>
-                <description>测试</description>
+                <description>曼德拉官方追悼会举行 政要名流齐聚</description>
                 <pubDate>Wed, 20 Nov 2013 12:00:00 +0800</pubDate>
         </item>
 		<item>
