@@ -3,11 +3,11 @@ layout: post
 title: "仿网易新闻点击图片放大动画"
 date: 2014-01-20 21:16
 comments: true
-categories:网易新闻,Android,ScaleAnmation,TranslateAnimation 
+categories: Android,ScaleAnmation,TranslateAnimation 
 ---
-<h1>仿网易新闻点击图片放大动画</h1>
 点击新闻中小图，从图片位置以动画的方式逐渐移动到屏幕中心并放大图片<br/>
 具体实现：<br/>
+<!-- more -->
 ``` java
     public static void browerImage(Activity activity, final ImageView originImageV, final ImageView scaleImageV){
                 int x = originImageV.getLeft();
@@ -15,7 +15,6 @@ categories:网易新闻,Android,ScaleAnmation,TranslateAnimation
                 DisplayMetrics metrics = new DisplayMetrics();
                 activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
                 int width = metrics.widthPixels;
-               <!-- more --> 
                 AnimationSet animationSet = new AnimationSet(true);
                 
                 TranslateAnimation translateAnimation = new TranslateAnimation(
