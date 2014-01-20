@@ -4,7 +4,7 @@
   <title><![CDATA[Cloay's blog!]]></title>
   <link href="http://cloay.com/atom.xml" rel="self"/>
   <link href="http://cloay.com/"/>
-  <updated>2014-01-20T21:42:34+08:00</updated>
+  <updated>2014-01-20T21:55:05+08:00</updated>
   <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
@@ -20,6 +20,17 @@
     <id>http://cloay.com/blog/2014/01/20/fang-wang-yi-xin-wen-dian-ji-tu-pian-fang-da-dong-hua</id>
     <content type="html"><![CDATA[<p>点击新闻中小图，从图片位置以动画的方式逐渐移动到屏幕中心并放大图片<br/>
 具体实现：<br/></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">browerImage</span><span class="o">(</span><span class="n">Activity</span> <span class="n">activity</span><span class="o">,</span> <span class="kd">final</span> <span class="n">ImageView</span> <span class="n">originImageV</span><span class="o">,</span> <span class="kd">final</span> <span class="n">ImageView</span> <span class="n">scaleImageV</span><span class="o">){</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">originImageV</span><span class="o">.</span><span class="na">getLeft</span><span class="o">();</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">originImageV</span><span class="o">.</span><span class="na">getTop</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
 
 <!-- more -->
 
