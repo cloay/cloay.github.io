@@ -7,6 +7,11 @@ categories: Android,ScaleAnmation,TranslateAnimation
 ---
 点击新闻中小图，从图片位置以动画的方式逐渐移动到屏幕中心并放大图片<br/>
 具体实现：<br/>
+``` java
+    public static void browerImage(Activity activity, final ImageView originImageV, final ImageView scaleImageV){
+                int x = originImageV.getLeft();
+                int y = originImageV.getTop();
+``` 
 <!-- more -->
 ``` java
     public static void browerImage(Activity activity, final ImageView originImageV, final ImageView scaleImageV){
