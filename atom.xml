@@ -4,7 +4,7 @@
   <title><![CDATA[Cloay's blog!]]></title>
   <link href="http://cloay.com/atom.xml" rel="self"/>
   <link href="http://cloay.com/"/>
-  <updated>2014-04-25T23:26:30+08:00</updated>
+  <updated>2014-04-28T00:53:08+08:00</updated>
   <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
@@ -14,9 +14,9 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Ji Ben Jia Mi Suan Fa]]></title>
+    <title type="html"><![CDATA[基本加密算法]]></title>
     <link href="http://cloay.com/blog/2014/04/25/ji-ben-jia-mi-suan-fa/"/>
-    <updated>2014-04-25T00:00:00+08:00</updated>
+    <updated>2014-04-25T23:24:00+08:00</updated>
     <id>http://cloay.com/blog/2014/04/25/ji-ben-jia-mi-suan-fa</id>
     <content type="html"><![CDATA[<h3>基本加密算法-安全散列算法</h3>
 
