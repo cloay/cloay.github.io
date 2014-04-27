@@ -3,7 +3,7 @@ layout: post
 title: "基本加密算法"
 date: 2014-04-25 23:24
 comments: true
-categories:MD5 SHA HMAC java ruby 
+categories: MD5 SHA HMAC java ruby 
 ---
 <h3>基本加密算法-安全散列算法</h3>
 <br>SHA（Secure Hash Algorithm，SHA)安全散列法<br>

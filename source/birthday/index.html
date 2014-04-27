@@ -133,7 +133,7 @@ var GZ_GTC = {lng: 116.327014, lat: 40.045331};
 // 北京市
 var GD_GZS = {lng: 116.403299, lat: 39.913118};
 // 丹阳市
-var GD_HYS = {lng: 119.598824, lat: 32.00747};
+var GD_HYS = {lng: 118.198824, lat: 35.50747};
 // 背景音乐
 var MUSIC;
 
@@ -209,7 +209,7 @@ function panZoom_JYU() {
     zoomTo(8, 1000, function() {
         map.panTo(new BMap.Point(MZ_JYU.lng, MZ_JYU.lat));
         setTimeout(function() {
-            zoomTo(16, 1000, function() {
+            zoomTo(16, 800, function() {
                 var marker = new BMap.Marker(MZ_JYU);
                 map.addOverlay(marker);
                 marker.setAnimation(BMAP_ANIMATION_BOUNCE);
@@ -220,7 +220,7 @@ function panZoom_JYU() {
 }
 
 function panZoom_HEY() {
-    zoomTo(9, 1000, function() {
+    zoomTo(6, 1000, function() {
         map.panTo(new BMap.Point(GD_HYS.lng, GD_HYS.lat));
         setTimeout(function() {
             var start = new BMap.Point(MZ_JYU.lng, MZ_JYU.lat);
@@ -245,7 +245,7 @@ function panZoom_HEY() {
                         point: MZ_JYU
                     }
                 ];
-                loopWin(between, 1000, showPhotos);
+                loopWin(between, 2000, showPhotos);
             }, 2000);
         }, 1000);
     });
@@ -255,7 +255,7 @@ function showPhotos() {
     map.clearOverlays();
     map.panTo(new BMap.Point(GD_GZS.lng, GD_GZS.lat));
     setTimeout(function() {
-        zoomTo(13, 1000, function() {
+        zoomTo(12, 1000, function() {
             var photos = [
                 {
                     title: '纪念堂',
