@@ -209,7 +209,7 @@ function panZoom_JYU() {
     zoomTo(8, 1000, function() {
         map.panTo(new BMap.Point(MZ_JYU.lng, MZ_JYU.lat));
         setTimeout(function() {
-            zoomTo(16, 800, function() {
+            zoomTo(16, 1000, function() {
                 var marker = new BMap.Marker(MZ_JYU);
                 map.addOverlay(marker);
                 marker.setAnimation(BMAP_ANIMATION_BOUNCE);
@@ -230,12 +230,12 @@ function panZoom_HEY() {
             setTimeout(function() {
                 var between = [
                     {
-                        title: '梅州 → 广州',
-                        content: '426 km.',
+                        title: '北京 → 丹阳',
+                        content: '1073 km.',
                         point: MZ_JYU
                     },
                     {
-                        title: '梅州 → 广州',
+                        title: '北京 → 丹阳',
                         content: '5 hours by train.',
                         point: GZ_GTC
                     },
@@ -245,7 +245,7 @@ function panZoom_HEY() {
                         point: MZ_JYU
                     }
                 ];
-                loopWin(between, 2000, showPhotos);
+                loopWin(between, 1000, showPhotos);
             }, 2000);
         }, 1000);
     });
@@ -318,7 +318,7 @@ function showPhotos() {
                     point: {lng: 115.622433, lat: 23.184734}
                 }
             ];
-            loopWin(photos, 2500, wannaTo);
+            loopWin(photos, 1000, wannaTo);
         });
     }, 1000);
 }
