@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Androi自定义View展示标签"
+title: "Android自定义View展示标签"
 date: 2014-08-08 20:15
 comments: true
 categories: android, LinearLayout, tag 
