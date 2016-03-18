@@ -5,8 +5,7 @@ date: 2016-03-17 14:50
 comments: true
 categories: iOS,GCD,Concurrency Programming,多线程,并发编程
 ---
-## 一、什么是GCD
-
+### 一、什么是GCD
 **GCD**是Grand Central Dispatch的缩写， 是Apple提供的一个并发编程实现库，即[libdispatch](https://github.com/apple/swift-corelibs-libdispatch)它是使用C语言实现。提供多核硬件（ iOS和OSX ）上执行并发代码的功能。
 
 <!-- more -->
@@ -40,8 +39,7 @@ dispatch queue是一个对象，它可以接受任务，并将任务以先到先
 GCD 对象都是oc对象支持ARC。当项目不支持ARC时使用dispatch_retain和dispatch_release管理内存的引用计数而不是retain/release。
 
 
-## 二、GCD常见用法
-
+### 二、GCD常见用法
 ####1、dispatch_async和dispatch_sync的简单用法
 
 a、创建一个异步任务
@@ -56,7 +54,8 @@ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
 b、创建一个同步任务
 ``` objective-c
-NSLog(@"1");   dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+NSLog(@"1");
+dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (int i = 0; i < 100; i++) {
             NSLog(@"2");
         }
@@ -65,7 +64,7 @@ NSLog(@"3");
 ```
 因为dispatch_sync是同步任务执行完毕后才会返回，即使加入了并发队列也是输出完所有的2后才会输出3.可以看到系统并没有创建新的线程：
 
-![gcd_sync](../images/gcd/gcd_sync.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_sync.png)
 
 再看一个例子：
 ``` objective-c
@@ -79,7 +78,7 @@ NSLog(@"3");
 ```
 这时的输出顺序是什么呢？答案是1，3，2，2，2......省略好多2。这是因为dispatch_get_main_queue是串行的而且和应用是同一个队列，dispatch_async创建异步任务后会立即返回，所以会先打印3。即使是使用dispatch_async方法加入main_queue依然不会创建新线程。
 
-![gcd_sync](../images/gcd/gcd_async.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_async.png)
 
 c、使用GCD实现单例
 
@@ -124,7 +123,7 @@ dispatch_queue_t serialQueue = dispatch_queue_create("com.cloay.myserialqueue", 
 ```
 串行队列中的任务是顺序执行的并且不会开启新的线程。
 
-![gcd_sync](../images/gcd/gcd_serial_queue.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_serial_queue.png)
 
 b、创建一个并发队列
 
@@ -148,12 +147,9 @@ dispatch_queue_t concurrentQueue = dispatch_queue_create("com.cloay.myconcurrent
 ```
 并发队列会根据需要开启新的线程并且执行顺序随机。
 
-![gcd_sync](../images/gcd/gcd_concurrent_queue.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_concurrent_queue.png)
 
-既然global_queue也是并发的，手动创建并发队列和全局队列有什么区别呢？
-
-Global_QUEUE有DISPATCH_QUEUE_PRIORITY_HIGH，DISPATCH_QUEUE_PRIORITY_DEFAULT，DISPATCH_QUEUE_PRIORITY_LOW 和 
-DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_queue方法我们可以根据需要获取不同优先级的全局队列。手动创建的的并发队列则不可以指定优先级，但我们可以通过Dispatch Queue目标指定既dispatch_set_target_queue方法将用户队列的目标队列设定为任意优先级的全局队列。在低层，GCD全局dispatch_queue仅仅是工作线程池的抽象。这些队列中的Block一旦可用，就会被dispatch到工作线程中。提交至用户队列的Block最终也会通过全局队列进入相同的工作线程池。
+既然global_queue也是并发的，手动创建并发队列和全局队列有什么区别呢？全局队列有DISPATCH_QUEUE_PRIORITY_HIGH，DISPATCH_QUEUE_PRIORITY_DEFAULT，DISPATCH_QUEUE_PRIORITY_LOW和DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_queue方法我们可以根据需要获取不同优先级的全局队列。手动创建的的并发队列则不可以指定优先级，但我们可以通过Dispatch Queue目标指定既dispatch_set_target_queue方法将用户队列的目标队列设定为任意优先级的全局队列。在低层，GCD全局dispatch_queue仅仅是工作线程池的抽象。这些队列中的Block一旦可用，就会被dispatch到工作线程中。提交至用户队列的Block最终也会通过全局队列进入相同的工作线程池。
 
 ``` objective-c
 //目标指定，收到创建的并发队列优先级是default
@@ -191,7 +187,7 @@ dispatch_queue_t concurrentQueue = dispatch_queue_create("com.cloay.myconcurrent
 ```
 执行结果
 
-![gcd_sync](../images/gcd/gcd_barrier.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_barrier.png)
 
 另外队列可以被挂起和恢复，使用dispatch_suspend挂起队列，使用dispatch_resume恢复。
 
@@ -212,7 +208,7 @@ NSLog(@"同步等待群组任务结束...");
 ```
 dispatch_group_wait会同步等待任务全部结束，我们可以看看运行结果：
 
-![gcd_sync](../images/gcd/gcd_group_wait.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_group_wait.png)
 
 如果我们不需要等待group任务执行结束，还可以利用dispatch_group_notify异步通知然后再去做相应的操作。
 
@@ -235,9 +231,9 @@ NSLog(@"我是main_queue...");
 ```
 运行结果：
 
-![gcd_sync](../images/gcd/gcd_group_notify.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_group_notify.png)
 
-我们可以dispatch_apply函数实现和dispatch_group同样的同步等待运算结束的功能。dispatch_apply会调用单一的block多次进行平行运算，然后等待所有运算结束，运算之间没有相互依赖。具体看代码：
+我们可以使用dispatch_apply函数实现和dispatch_group同样的同步等待运算结束的功能。dispatch_apply会调用单一的block多次进行平行运算，然后等待所有运算结束，运算之间没有相互依赖。具体看代码：
 
 ``` objective-c
 NSArray *arr = @[@"", @"", @"", @"", @"", @"", @"", @"", @"", @""];
@@ -252,7 +248,7 @@ NSLog(@"同步等待apply任务结束...");
 
 结果和dispatch_group_wait类似的：
 
-![gcd_sync](../images/gcd/gcd_apply.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_apply.png)
 
 ####4、信号量
 我们可以使用gcd中的dispatch_semaphore实现同步机制，通常用在当几个线程同时访问一个资源，通过信号量来控制访问的线程个数.
@@ -279,13 +275,12 @@ dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);
     });
 ```
 
-我们线程加上信号量实现了加锁功能，当线程1结束后线程2才能访问资源i。运行结果如下
+给线程加上信号量实现了加锁功能，当线程1结束后线程2才能访问资源i。运行结果如下
 
-![gcd_sync](../images/gcd/gcd_semaphore.png)
+![gcd_sync](http://cloay.com/images/gcd/gcd_semaphore.png)
 
 常见的GCD用法就这些。
-##三、总结
-
+###三、总结 
 GCD提供了一种简单实现多线程和并发功能的方式。通过GCD我们可以快速创建并发任务，充分利用多核功能提升程序的性能。希望通过本文的介绍可以对GCD有一个简单的了解并会使用常见功能。
 
 参考链接：
@@ -293,3 +288,5 @@ GCD提供了一种简单实现多线程和并发功能的方式。通过GCD我�
 * [Concurrent and Parallel Programming](http://joearms.github.io/2013/04/05/concurrent-and-parallel-programming.html)
 * [Grand Central Dispatch (GCD) Reference](https://developer.apple.com/library/prerelease/ios/documentation/Performance/Reference/GCD_libdispatch_Ref/)
 * [Grand Central Dispatch (GCD): Summary, Syntax & Best Practices](http://amattn.com/p/grand_central_dispatch_gcd_summary_syntax_best_practices.html)
+
+
