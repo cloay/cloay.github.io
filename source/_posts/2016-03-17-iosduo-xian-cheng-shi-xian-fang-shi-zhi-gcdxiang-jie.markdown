@@ -19,7 +19,8 @@ categories: iOS,GCD,Concurrency Programming,多线程,并发编程
 
 两者的区别：并发和并行是即相似又有区别的两个概念，并行是指两个或者多个事件在同一时刻发生；而并发是指两个或多个事件在同一时间间隔内发生。在多道程序环境下，并发性是指在一段时间内宏观上有多个程序在同时运行，但在单处理机系统中，每一时刻却仅能有一道程序执行，故微观上这些程序只能是分时地交替执行。倘若在计算机系统中有多个处理机，则这些可以并发执行的程序便可被分配到多个处理机上，实现并行执行，即利用每个处理机来处理一个可并发执行的程序，这样，多个程序便可以同时执行。
 
-下面是一张解释并发和并行区别的经典图：
+下面是一张并发和并行区别的图：
+
 ![concurrent and parallel's diff](http://joearms.github.io/images/con_and_par.jpg)
 
 咖啡机就相当于CPU，并发的情况下多个线程队列分时段取咖啡，而并行在多核硬件上真正实现了同时执行任务。
@@ -37,8 +38,7 @@ dispatch queue是一个对象，它可以接受任务，并将任务以先到先
 3）、用户创建队列 我们可以使用dispatch_queue_create( const char *label dispatch_queue_attr_t attr)方法自己创建队列。我们可以指定dispatch_queue_attr_t参数为 DISPATCH_QUEUE_SERIAL 和 DISPATCH_QUEUE_CONCURRENT 来创建相应的串行和并发队列。
 
 GCD 对象都是oc对象支持ARC。当项目不支持ARC时使用dispatch_retain和dispatch_release管理内存的引用计数而不是retain/release。
-
-
+<br>
 ### 二、GCD常见用法
 ####1、dispatch_async和dispatch_sync的简单用法
 
@@ -289,4 +289,6 @@ GCD提供了一种简单实现多线程和并发功能的方式。通过GCD我�
 * [Grand Central Dispatch (GCD) Reference](https://developer.apple.com/library/prerelease/ios/documentation/Performance/Reference/GCD_libdispatch_Ref/)
 * [Grand Central Dispatch (GCD): Summary, Syntax & Best Practices](http://amattn.com/p/grand_central_dispatch_gcd_summary_syntax_best_practices.html)
 
-
+<br>
+<br>
+<br>
