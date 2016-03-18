@@ -4,7 +4,7 @@
   <title><![CDATA[Cloay's blog!]]></title>
   <link href="http://cloay.com/atom.xml" rel="self"/>
   <link href="http://cloay.com/"/>
-  <updated>2016-03-18T14:43:13+08:00</updated>
+  <updated>2016-03-18T15:45:04+08:00</updated>
   <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Cloay]]></name>
@@ -18,7 +18,7 @@
     <link href="http://cloay.com/blog/2016/03/17/iosduo-xian-cheng-shi-xian-fang-shi-zhi-gcdxiang-jie/"/>
     <updated>2016-03-17T14:50:00+08:00</updated>
     <id>http://cloay.com/blog/2016/03/17/iosduo-xian-cheng-shi-xian-fang-shi-zhi-gcdxiang-jie</id>
-    <content type="html"><![CDATA[<h2>一、什么是GCD</h2>
+    <content type="html"><![CDATA[<h3>一、什么是GCD</h3>
 
 <p><strong>GCD</strong>是Grand Central Dispatch的缩写， 是Apple提供的一个并发编程实现库，即<a href="https://github.com/apple/swift-corelibs-libdispatch">libdispatch</a>它是使用C语言实现。提供多核硬件（ iOS和OSX ）上执行并发代码的功能。</p>
 
@@ -58,7 +58,7 @@
 
 <p>GCD 对象都是oc对象支持ARC。当项目不支持ARC时使用dispatch_retain和dispatch_release管理内存的引用计数而不是retain/release。</p>
 
-<h2>二、GCD常见用法</h2>
+<h3>二、GCD常见用法</h3>
 
 <h4>1、dispatch_async和dispatch_sync的简单用法</h4>
 
@@ -87,7 +87,9 @@
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;1&quot;</span><span class="p">);</span>   <span class="n">dispatch_sync</span><span class="p">(</span><span class="n">dispatch_get_global_queue</span><span class="p">(</span><span class="n">DISPATCH_QUEUE_PRIORITY_DEFAULT</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">^</span><span class="p">{</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;1&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">dispatch_sync</span><span class="p">(</span><span class="n">dispatch_get_global_queue</span><span class="p">(</span><span class="n">DISPATCH_QUEUE_PRIORITY_DEFAULT</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">^</span><span class="p">{</span>
 </span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;2&quot;</span><span class="p">);</span>
 </span><span class='line'>        <span class="p">}</span>
@@ -98,7 +100,7 @@
 
 <p>因为dispatch_sync是同步任务执行完毕后才会返回，即使加入了并发队列也是输出完所有的2后才会输出3.可以看到系统并没有创建新的线程：</p>
 
-<p><img src="../images/gcd/gcd_sync.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_sync.png" alt="gcd_sync" /></p>
 
 <p>再看一个例子：</p>
 
@@ -121,7 +123,7 @@
 
 <p>这时的输出顺序是什么呢？答案是1，3，2，2，2&hellip;&hellip;省略好多2。这是因为dispatch_get_main_queue是串行的而且和应用是同一个队列，dispatch_async创建异步任务后会立即返回，所以会先打印3。即使是使用dispatch_async方法加入main_queue依然不会创建新线程。</p>
 
-<p><img src="../images/gcd/gcd_async.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_async.png" alt="gcd_sync" /></p>
 
 <p>c、使用GCD实现单例</p>
 
@@ -194,7 +196,7 @@
 
 <p>串行队列中的任务是顺序执行的并且不会开启新的线程。</p>
 
-<p><img src="../images/gcd/gcd_serial_queue.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_serial_queue.png" alt="gcd_sync" /></p>
 
 <p>b、创建一个并发队列</p>
 
@@ -235,12 +237,9 @@
 
 <p>并发队列会根据需要开启新的线程并且执行顺序随机。</p>
 
-<p><img src="../images/gcd/gcd_concurrent_queue.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_concurrent_queue.png" alt="gcd_sync" /></p>
 
-<p>既然global_queue也是并发的，手动创建并发队列和全局队列有什么区别呢？</p>
-
-<p>Global_QUEUE有DISPATCH_QUEUE_PRIORITY_HIGH，DISPATCH_QUEUE_PRIORITY_DEFAULT，DISPATCH_QUEUE_PRIORITY_LOW 和
-DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_queue方法我们可以根据需要获取不同优先级的全局队列。手动创建的的并发队列则不可以指定优先级，但我们可以通过Dispatch Queue目标指定既dispatch_set_target_queue方法将用户队列的目标队列设定为任意优先级的全局队列。在低层，GCD全局dispatch_queue仅仅是工作线程池的抽象。这些队列中的Block一旦可用，就会被dispatch到工作线程中。提交至用户队列的Block最终也会通过全局队列进入相同的工作线程池。</p>
+<p>既然global_queue也是并发的，手动创建并发队列和全局队列有什么区别呢？全局队列有DISPATCH_QUEUE_PRIORITY_HIGH，DISPATCH_QUEUE_PRIORITY_DEFAULT，DISPATCH_QUEUE_PRIORITY_LOW和DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_queue方法我们可以根据需要获取不同优先级的全局队列。手动创建的的并发队列则不可以指定优先级，但我们可以通过Dispatch Queue目标指定既dispatch_set_target_queue方法将用户队列的目标队列设定为任意优先级的全局队列。在低层，GCD全局dispatch_queue仅仅是工作线程池的抽象。这些队列中的Block一旦可用，就会被dispatch到工作线程中。提交至用户队列的Block最终也会通过全局队列进入相同的工作线程池。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -306,7 +305,7 @@ DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_q
 
 <p>执行结果</p>
 
-<p><img src="../images/gcd/gcd_barrier.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_barrier.png" alt="gcd_sync" /></p>
 
 <p>另外队列可以被挂起和恢复，使用dispatch_suspend挂起队列，使用dispatch_resume恢复。</p>
 
@@ -337,7 +336,7 @@ DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_q
 
 <p>dispatch_group_wait会同步等待任务全部结束，我们可以看看运行结果：</p>
 
-<p><img src="../images/gcd/gcd_group_wait.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_group_wait.png" alt="gcd_sync" /></p>
 
 <p>如果我们不需要等待group任务执行结束，还可以利用dispatch_group_notify异步通知然后再去做相应的操作。</p>
 
@@ -376,9 +375,9 @@ DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_q
 
 <p>运行结果：</p>
 
-<p><img src="../images/gcd/gcd_group_notify.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_group_notify.png" alt="gcd_sync" /></p>
 
-<p>我们可以dispatch_apply函数实现和dispatch_group同样的同步等待运算结束的功能。dispatch_apply会调用单一的block多次进行平行运算，然后等待所有运算结束，运算之间没有相互依赖。具体看代码：</p>
+<p>我们可以使用dispatch_apply函数实现和dispatch_group同样的同步等待运算结束的功能。dispatch_apply会调用单一的block多次进行平行运算，然后等待所有运算结束，运算之间没有相互依赖。具体看代码：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -401,7 +400,7 @@ DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_q
 
 <p>结果和dispatch_group_wait类似的：</p>
 
-<p><img src="../images/gcd/gcd_apply.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_apply.png" alt="gcd_sync" /></p>
 
 <h4>4、信号量</h4>
 
@@ -448,13 +447,13 @@ DISPATCH_QUEUE_PRIORITY_BACKGROUND 四种优先级。使用dispatch_get_global_q
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>我们线程加上信号量实现了加锁功能，当线程1结束后线程2才能访问资源i。运行结果如下</p>
+<p>给线程加上信号量实现了加锁功能，当线程1结束后线程2才能访问资源i。运行结果如下</p>
 
-<p><img src="../images/gcd/gcd_semaphore.png" alt="gcd_sync" /></p>
+<p><img src="http://cloay.com/images/gcd/gcd_semaphore.png" alt="gcd_sync" /></p>
 
 <p>常见的GCD用法就这些。</p>
 
-<h2>三、总结</h2>
+<h3>三、总结</h3>
 
 <p>GCD提供了一种简单实现多线程和并发功能的方式。通过GCD我们可以快速创建并发任务，充分利用多核功能提升程序的性能。希望通过本文的介绍可以对GCD有一个简单的了解并会使用常见功能。</p>
 
