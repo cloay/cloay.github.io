@@ -3,11 +3,11 @@
 # ----------------------- #
 
 url: http://cloay.com
-title: Cloay's blog! 
-subtitle: Some people want it to happen, some wish it would happen, others make it happen.
-author: Cloay 
+title: 尚卫民的博客 
+subtitle: Passion,interest it's not the same thing. 
+author: Weimin 
 simple_search: http://google.com/search
-description: I am a coder and I'm a splendid chap!
+description: 热爱编程专注于iOS，Android，目前工作在北京。
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
