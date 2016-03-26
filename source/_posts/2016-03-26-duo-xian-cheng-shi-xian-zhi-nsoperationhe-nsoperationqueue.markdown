@@ -204,7 +204,7 @@ NSLog(@"main thread ...");
 ```
 我们为blockOperation3添加依赖blockOperation1，blockOperation3会在blockOperation1执行结束后才会启动。结果如下：
 
-'![operation-dependency]: (http://cloay.com/images/operation/operation-dependency.png)'
+![operation-dependency](http://cloay.com/images/operation/operation-dependency.png)
 
 在上文中我们介绍过waitUntilFinished方法下面我们就看一下它的用法，改变一下Operation加入队列的代码：
 
@@ -216,7 +216,7 @@ NSLog(@"main thread ...");
 ```
 我们插入了一行[blockOperation1 waitUntilFinished]代码，并将blockOperation3的依赖设置为blockOperation2。waitUntilFinished会阻塞当前线程直到blockOperation1执行完毕。
 
-'![operation-dependency]: (http://cloay.com/images/operation/operation-wait.png)'
+![operation-dependency](http://cloay.com/images/operation/operation-wait.png)
 
 另外OperationQueue还有方法
 
@@ -254,7 +254,7 @@ NSBlockOperation *blockOperation3 = [NSBlockOperation blockOperationWithBlock:^{
 ```
 运行结果如下：
 
-'![operation-dependency]: (http://cloay.com/images/operation/operation-wait2.png)'
+![operation-dependency](http://cloay.com/images/operation/operation-wait2.png)
 
 我们可以取消一个Operation当Operation还没有执行的时候，只需要调用cancel方法或者调用OperationQueue中的cancelAllOperations取消队列中所有没有执行的Operation。
 
