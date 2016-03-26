@@ -4,7 +4,7 @@
   <title><![CDATA[Category: NSOperation,NSOperationQueue,多线程,Concurrency | 尚卫民的博客]]></title>
   <link href="http://cloay.com/blog/categories/nsoperation-nsoperationqueue-duo-xian-cheng-concurrency/atom.xml" rel="self"/>
   <link href="http://cloay.com/"/>
-  <updated>2016-03-26T23:09:58+08:00</updated>
+  <updated>2016-03-26T23:18:19+08:00</updated>
   <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Weimin]]></name>
@@ -254,7 +254,7 @@ NSLog(@"blockOperation3 task finished...");
 ```
 我们为blockOperation3添加依赖blockOperation1，blockOperation3会在blockOperation1执行结束后才会启动。结果如下：</p>
 
-<p>&lsquo;![operation-dependency]: (<a href="http://cloay.com/images/operation/operation-dependency.png">http://cloay.com/images/operation/operation-dependency.png</a>)&rsquo;</p>
+<p><img src="http://cloay.com/images/operation/operation-dependency.png" alt="operation-dependency" /></p>
 
 <p>在上文中我们介绍过waitUntilFinished方法下面我们就看一下它的用法，改变一下Operation加入队列的代码：</p>
 
@@ -266,7 +266,7 @@ NSLog(@"blockOperation3 task finished...");
 </code>
 我们插入了一行[blockOperation1 waitUntilFinished]代码，并将blockOperation3的依赖设置为blockOperation2。waitUntilFinished会阻塞当前线程直到blockOperation1执行完毕。</p>
 
-<p>&lsquo;![operation-dependency]: (<a href="http://cloay.com/images/operation/operation-wait.png">http://cloay.com/images/operation/operation-wait.png</a>)&rsquo;</p>
+<p><img src="http://cloay.com/images/operation/operation-wait.png" alt="operation-dependency" /></p>
 
 <p>另外OperationQueue还有方法</p>
 
@@ -316,7 +316,7 @@ NSLog(@"blockOperation3 task finished...");
 ```
 运行结果如下：</p>
 
-<p>&lsquo;![operation-dependency]: (<a href="http://cloay.com/images/operation/operation-wait2.png">http://cloay.com/images/operation/operation-wait2.png</a>)&rsquo;</p>
+<p><img src="http://cloay.com/images/operation/operation-wait2.png" alt="operation-dependency" /></p>
 
 <p>我们可以取消一个Operation当Operation还没有执行的时候，只需要调用cancel方法或者调用OperationQueue中的cancelAllOperations取消队列中所有没有执行的Operation。</p>
 
