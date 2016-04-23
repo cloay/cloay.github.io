@@ -35,7 +35,7 @@ App上的视图通过Cocoa框架（包括Core Graphics，Core Animation，Core I
 ###2、查看离屏渲染
 模拟器查看Offscreen-rendering可以通过打开模拟器debug菜单勾选Color Offscreen-Renerder，离屏渲染的元素会被黄色的方块覆盖，如下图：
 
-![tableview](http://cloay.com/images/offscreen/IMG_3048.png)
+<img src="http://cloay.com/images/offscreen/IMG_3048.PNG" width="360">
 
 也可以使用Instrumengts选择Core Animation，然后勾选右下角Color Offscreen-Renerder选项即可，勾选Color Hits Green and Misses Red选项可以查看那些离屏渲染被复用了，绿色表示被复用红色表示被重新创建了。当离屏渲染的位图缓存被重建了那么就需要重新权衡一下是否应该使用离屏渲染。
 
@@ -45,9 +45,10 @@ App上的视图通过Cocoa框架（包括Core Graphics，Core Animation，Core I
 2. 设置阴影效果（shadow）
 3. 设置了masksToBounds, clipsToBounds, shouldRasterize属性值为YES
 4. CASharpLayer矢量图形
+
 比如我们常见的TableView中，每个cell都有一些使用layer的cornerRadius属性切圆角(见下图：)
 
-![tableview](http://cloay.com/images/offscreen/IMG_3048.png)
+<img src="http://cloay.com/images/offscreen/IMG_3048.PNG" width="360">
 
 我们通常又对cell进行了重用，当我们滚动tableview时，被复用的cell的内容又发生了变化就需要重新绘制。这时就会产生大量离屏渲染对性能产生损耗，tableview滚动也就没有那么流畅了。
 
@@ -61,8 +62,8 @@ App上的视图通过Cocoa框架（包括Core Graphics，Core Animation，Core I
 
 使用代码手动生成圆角Image后，再看已经没有离屏渲染问题了，帧率也从40左右上升到了差不多60了。
 
-![tableview](http://cloay.com/images/offsceen/IMG_3033.png)
-![tableview](http://cloay.com/images/offscreen/IMG_3039.png)
+<img src="http://cloay.com/images/offscreen/IMG_3033.PNG" width="360">
+<img src="http://cloay.com/images/offscreen/IMG_3039.png" width="360">
 
 生产图片圆角代码:
 
