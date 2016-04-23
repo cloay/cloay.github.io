@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: install | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/install/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2016-04-23T18:03:38+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Homebrew的安装和使用]]></title>
+    <link href="http://cloay.com/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong/"/>
+    <updated>2013-11-15T14:33:00+08:00</updated>
+    <id>http://cloay.com/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong</id>
+    <content type="html"><![CDATA[<h3>Homebrew 是什么</h3>
+
+
+<br>
+
+
+<p>官网是这样说的：<br></p>
+
+<p>在 OS X 中找不到您想要的软件？Homebrew 给你所需。<br>Homebrew 将软件包分装到单独的目录，然后 symlink 到 /usr/local 中。</p>
+
+
+<!-- more -->
+
+
+<p>轻松创建您自己的 Homebrew 软件包。
+``` ruby
+    $ brew create http://foo.com/bar-1.0.tgz
+    Created /usr/local/Library/Formula/bar.rb
+```
+完全基于 git 和 ruby，您可以很方便地撤销、更改或合并上流的更新。</p>
+
+
+<br>
+
+
+<h3>安装 Homebrew</h3>
+
+
+<p>打开 Terminal, 复制并粘贴:</p>
+
+
+<p>``` ruby</p>
+
+<pre><code>ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+</code></pre>
+
+<p>```</p>
+
+<br>
+
+
+<h3>Homebrew 使用</h3>
+
+
+<p>查看寻找自己的包</p>
+
+
+<p>``` ruby</p>
+
+<pre><code>brew search //+keyword
+</code></pre>
+
+<p>```</p>
+
+<p>安装包</p>
+
+
+<p>``` ruby</p>
+
+<pre><code>brew install // + 包名
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

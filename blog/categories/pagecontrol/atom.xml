@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: pagecontrol | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/pagecontrol/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2016-04-23T18:03:38+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[pagecontrolandroid中的实现]]></title>
+    <link href="http://cloay.com/blog/2014/05/15/pagecontrolandroidzhong-de-shi-xian/"/>
+    <updated>2014-05-15T22:46:00+08:00</updated>
+    <id>http://cloay.com/blog/2014/05/15/pagecontrolandroidzhong-de-shi-xian</id>
+    <content type="html"><![CDATA[<p>Android中没有PageControl控件 自己实现如下：</p>
+
+
+<p>``` java
+public class PageControl extends LinearLayout {</p>
+
+<pre><code>private int count = 0;
+private int selected = 0;
+private int nomal_icon_id = R.drawable.pagecontro_icon_normal;
+private int foucsed_icon_id = R.drawable.pagecontro_icon_foucsed;
+private Context context;
+public PageControl(Context context) {
+    super(context);
+    this.context = context;
+}
+
+public PageControl(Context context, AttributeSet attrs){
+    super(context, attrs);
+    this.context = context;
+    generateView();
+}
+
+public PageControl(Context context, int count) {
+    super(context);
+    this.count = count;
+    this.context = context;
+    generateView();
+}
+
+private void generateView(){
+    removeAllViews();
+    LayoutParams params =  new LayoutParams(context.getResources().getDimensionPixelSize(R.dimen.home_banner_pagecontrol_shape), 
+            context.getResources().getDimensionPixelSize(R.dimen.home_banner_pagecontrol_shape));
+    params.setMargins(10, 0, 0, 10);
+    for(int i = 0; i &lt; count ; i++){
+        ImageView indicatorV = new ImageView(context);
+        if (i == selected) {
+            indicatorV.setImageResource(foucsed_icon_id);
+        }else{
+            indicatorV.setImageResource(nomal_icon_id);
+        }
+        addView(indicatorV, params);
+    }
+}
+
+public void setCount(int count){
+    this.count = count;
+    generateView();
+}
+
+public void setSelected(int index){
+    this.selected = index;
+    generateView();
+}
+
+public void setIconId(int nomalId, int foucsedId){
+    this.nomal_icon_id = nomalId;
+    this.foucsed_icon_id = foucsedId;
+}
+</code></pre>
+
+<p>}
+```
+直接在布局中定义就可以使用了。</p>
+]]></content>
+  </entry>
+  
+</feed>

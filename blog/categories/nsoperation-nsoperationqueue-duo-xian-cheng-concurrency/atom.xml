@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: NSOperation,NSOperationQueue,多线程,Concurrency | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/nsoperation-nsoperationqueue-duo-xian-cheng-concurrency/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2016-04-23T18:03:38+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[多线程实现之Operation Queues]]></title>
+    <link href="http://cloay.com/blog/2016/03/26/duo-xian-cheng-shi-xian-zhi-nsoperationhe-nsoperationqueue/"/>
+    <updated>2016-03-26T17:39:00+08:00</updated>
+    <id>http://cloay.com/blog/2016/03/26/duo-xian-cheng-shi-xian-zhi-nsoperationhe-nsoperationqueue</id>
+    <content type="html"><![CDATA[<h3>一、Operation Queues简介</h3>
+
+<p>Cocoa operations 为我们提供了一种面向对象的方式的来封装异步任务。包含Cocoa框架中的NSOperation和NSOperationQueue两个类，Operation通常与OperationQueue相结合来使用，是多线程的一种实现方式。其实现方式一是创建新线程，二是使用GCD的方式实现，相对于GCD可操作性高，是GCD的一种替代方式。</p>
+
+<!-- more -->
+
+
+<h3>二、NSOperation介绍</h3>
+
+<p>NSOperation是一个抽象类，表示一个独立的计算单元。因为是抽象类我们不能直接使用，苹果为我们实现了两个类既NSInvocationOperation和NSBlockOperation。我们也可以自定义自己的Operation通过继承NSOperation类。</p>
+
+<h4>1、NSOperation的方法和属性</h4>
+
+<p><strong>NSOperation定义的属性如下：</strong></p>
+
+<ul>
+<li>completionBlock 该属性是任务完成后调用的block</li>
+<li>cancelled, executing, finished, concurrent, asynchronous, ready 这些是Operation的相关状态</li>
+<li>name Operation的名字</li>
+<li>queuePriority 执行的优先级
+有以下几种：</li>
+<li>NSOperationQueuePriorityVeryLow</li>
+<li>NSOperationQueuePriorityLow</li>
+<li>NSOperationQueuePriorityNormal</li>
+<li>NSOperationQueuePriorityHigh</li>
+<li>NSOperationQueuePriorityVeryHigh</li>
+</ul>
+
+
+<p><strong>NSOperation定义的方法有如下：</strong></p>
+
+<ul>
+<li>start 启动任务</li>
+<li>main      真正执行任务的的方法，自定义Operation必须实现该方法</li>
+<li>cancel    取消任务</li>
+<li>addDependency 添加依赖方法，添加依赖任务会在依赖任务完成后才执行</li>
+<li>removeDependency  移除依赖</li>
+<li>waitUnitlFinished 该方法会阻塞当前线程直到该操作任务完成。一个Operation决不能自身调用改方法，也不能在加入OperationQueue之前调用。</li>
+</ul>
+
+
+<h4>2、创建Operation</h4>
+
+<p>使用NSInvocationOperation创建
+<code>objective-c
+NSInvocationOperation *invocationOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(invocationOperationTask) object:nil];
+[invocationOperation start];
+</code>
+使用NSBlockOperation创建
+```objective-c
+NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>    NSLog(@"blockOperation thread =%@ ", [NSThread currentThread]);
+    NSLog(@"blockOperation task...");
+}];
+</code></pre>
+
+<p>[blockOperation start];
+```</p>
+
+<p>自定义Operation必须实现initialization和main方法，Operation默认按synchronous方式执行，若要按asynchronous方式则必须实现start, isExecuting, isFinished, isConcurrent方法并且维护Executing, Finished, Concurrent等状态值的更新。</p>
+
+<p>下面是自定义异步Operation实现：</p>
+
+<p>```objective-c</p>
+
+<h1>import &ldquo;MyOperation.h&rdquo;</h1>
+
+<p>@interface MyOperation(){</p>
+
+<pre><code>BOOL finished;
+BOOL executing;
+</code></pre>
+
+<p>}</p>
+
+<ul>
+<li>(void)completeOperation;</li>
+</ul>
+
+
+<p>@end</p>
+
+<p>@implementation MyOperation</p>
+
+<ul>
+<li><p>(id)init {
+  self = [super init];
+  if (self) {
+      executing = NO;
+      finished = NO;
+  }
+  return self;
+}</p></li>
+<li><p>(void)start{
+  if ([self isCancelled]) {
+      // Must move the operation to the finished state if it is canceled.
+      [self willChangeValueForKey:@&ldquo;isFinished&rdquo;];
+      finished = YES;
+      [self didChangeValueForKey:@&ldquo;isFinished&rdquo;];
+      NSLog(@&ldquo;has cancelled &hellip;&rdquo;);
+      return;
+  }</p>
+
+<p>  // If the operation is not canceled, begin executing the task.
+  [self willChangeValueForKey:@&ldquo;isExecuting&rdquo;];
+  [NSThread detachNewThreadSelector:@selector(main) toTarget:self withObject:nil];
+  executing = YES;
+  [self didChangeValueForKey:@&ldquo;isExecuting&rdquo;];</p></li>
+</ul>
+
+
+<p>}</p>
+
+<ul>
+<li><p>(void)main {
+  @try {
+      // Do the main work of the operation here.</p>
+
+<pre><code>  NSLog(@"do task ....");
+
+
+  [self completeOperation];
+</code></pre>
+
+<p>  }
+  @catch(&hellip;) {
+      // Do not rethrow exceptions.
+      NSLog(@&ldquo;do task exception&hellip;.&rdquo;);
+  }
+}</p></li>
+<li><p>(void)completeOperation {
+  [self willChangeValueForKey:@&ldquo;isFinished&rdquo;];
+  [self willChangeValueForKey:@&ldquo;isExecuting&rdquo;];</p>
+
+<p>  executing = NO;
+  finished = YES;</p>
+
+<p>  [self didChangeValueForKey:@&ldquo;isExecuting&rdquo;];
+  [self didChangeValueForKey:@&ldquo;isFinished&rdquo;];
+}</p></li>
+<li><p>(BOOL)isConcurrent {
+  return YES;
+}</p></li>
+<li><p>(BOOL)isAsynchronous{
+  return YES;
+}</p></li>
+<li><p>(BOOL)isExecuting {
+  return executing;
+}</p></li>
+<li><p>(BOOL)isFinished {
+  return finished;
+}</p></li>
+</ul>
+
+
+<p>@end</p>
+
+<p>```</p>
+
+<h3>三、使用NSOperationQueue管理Operation队列</h3>
+
+<p>简单的Operation不没有什么特别大的用处。在实际的项目中往往使用NSOperationQueue管理一连串的Operation来完成复杂任务。可以NSOperationQueue中的-(void)addOperation:(NSOperation *)方法将Operation加入队列中。</p>
+
+<p>```objective-c
+NSInvocationOperation *invocationOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(invocationOperationTask) object:nil];</p>
+
+<p>NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>    NSLog(@"blockOperation thread =%@ ", [NSThread currentThread]);
+    NSLog(@"blockOperation task...");
+}];
+</code></pre>
+
+<p>MyOperation *myOperation = [[MyOperation alloc] init];</p>
+
+<p>NSOperationQueue *myOperationQueue = [[NSOperationQueue alloc] init];
+//将Operation加入到队列
+[myOperationQueue addOperation:myOperation];
+[myOperationQueue addOperation:invocationOperation];
+[myOperationQueue addOperation:blockOperation];</p>
+
+<p>```
+也可以使用addOperationWithBlock方法快速添加一个Operation到OperationQueue中</p>
+
+<p>```objective-c
+[myOperationQueue addOperationWithBlock:^{</p>
+
+<pre><code>NSLog(@"addOperationWithBlock thread =%@ ",     [NSThread currentThread]);
+NSLog(@"addOperationWithBlock task...");
+</code></pre>
+
+<p>}];
+```
+加入到OperationQueue中的Operation会按自动执行。可以设置Operation的优先级既queuePriority来改变Operation执行的优先级。使用addDependency来添加依赖关系，变相控制Operation的执行顺序。扩展一下上面的代码：</p>
+
+<p>```objective-c
+NSOperationQueue *myOperationQueue = [[NSOperationQueue alloc] init];
+[myOperationQueue setName:@&ldquo;myqueue&rdquo;];</p>
+
+<p>NSBlockOperation *blockOperation1 = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>NSLog(@"blockOperation3 task start...");
+sleep(3);
+NSLog(@"blockOperation1 task finished...");
+</code></pre>
+
+<p>}];</p>
+
+<p>NSBlockOperation *blockOperation2 = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>NSLog(@"blockOperation2 task start...");
+sleep(3);
+NSLog(@"blockOperation2 task finished...");
+</code></pre>
+
+<p>}];</p>
+
+<p>NSBlockOperation *blockOperation3 = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>NSLog(@"blockOperation3 task start...");
+sleep(3);
+NSLog(@"blockOperation3 task finished...");
+</code></pre>
+
+<p>}];
+[blockOperation3 addDependency:blockOperation1];</p>
+
+<p>[myOperationQueue addOperation:blockOperation1];
+[myOperationQueue addOperation:blockOperation2];
+[myOperationQueue addOperation:blockOperation3];</p>
+
+<p>NSLog(@&ldquo;main thread &hellip;&rdquo;);
+```
+我们为blockOperation3添加依赖blockOperation1，blockOperation3会在blockOperation1执行结束后才会启动。结果如下：</p>
+
+<p><img src="http://cloay.com/images/operation/operation-dependency.png" alt="operation-dependency" /></p>
+
+<p>在上文中我们介绍过waitUntilFinished方法下面我们就看一下它的用法，改变一下Operation加入队列的代码：</p>
+
+<p><code>objective-c
+[myOperationQueue addOperation:blockOperation1];
+[blockOperation1 waitUntilFinished];
+[myOperationQueue addOperation:blockOperation2];
+[myOperationQueue addOperation:blockOperation3];
+</code>
+我们插入了一行[blockOperation1 waitUntilFinished]代码，并将blockOperation3的依赖设置为blockOperation2。waitUntilFinished会阻塞当前线程直到blockOperation1执行完毕。</p>
+
+<p><img src="http://cloay.com/images/operation/operation-wait.png" alt="operation-dependency" /></p>
+
+<p>另外OperationQueue还有方法</p>
+
+<p>```objective-c
+&ndash; (void)addOperations:(NSArray<NSOperation *> *)ops</p>
+
+<pre><code>waitUntilFinished:(BOOL)wait
+</code></pre>
+
+<p>```</p>
+
+<p>通过改方法可以将一组Operation加入到队列中，wait为YES时表示需要等待任务执行结束会阻塞当前线程，为NO时则直接返回。修改代码如下：</p>
+
+<p>```objective-c
+NSOperationQueue *myOperationQueue = [[NSOperationQueue alloc] init];
+[myOperationQueue setName:@&ldquo;myqueue&rdquo;];</p>
+
+<p>NSBlockOperation *blockOperation1 = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>NSLog(@"blockOperation1 task start...");
+sleep(3);
+NSLog(@"blockOperation1 task finished...");
+</code></pre>
+
+<p>}];</p>
+
+<p>NSBlockOperation *blockOperation2 = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>NSLog(@"blockOperation2 task start...");
+sleep(3);
+NSLog(@"blockOperation2 task finished...");
+</code></pre>
+
+<p>}];</p>
+
+<p>NSBlockOperation *blockOperation3 = [NSBlockOperation blockOperationWithBlock:^{</p>
+
+<pre><code>NSLog(@"blockOperation3 task start...");
+sleep(3);
+NSLog(@"blockOperation3 task finished...");
+</code></pre>
+
+<p>}];
+[blockOperation3 addDependency:blockOperation2];</p>
+
+<p>[myOperationQueue addOperations:[NSArray arrayWithObjects:blockOperation1, blockOperation2, blockOperation3, nil] waitUntilFinished:YES];
+```
+运行结果如下：</p>
+
+<p><img src="http://cloay.com/images/operation/operation-wait2.png" alt="operation-dependency" /></p>
+
+<p>我们可以取消一个Operation当Operation还没有执行的时候，只需要调用cancel方法或者调用OperationQueue中的cancelAllOperations取消队列中所有没有执行的Operation。</p>
+
+<h3>四、总结</h3>
+
+<p>通过NSOperation和NSOpertionQueue可以实现多线程的功能。我们可以通过继承NSOperation来自定义Operation来完成复杂的功能。NSOperationQueue和GCD都是苹果为我们提供的多线程实现方式，简化了我们处理复杂业务的难度。NSOperationQueue相对与GCD操作性更高，我们可以根据实际需要来选择。</p>
+
+<h4>参考链接:</h4>
+
+<ul>
+<li><a href="https://developer.apple.com/library/ios/documentation/General/Conceptual/ConcurrencyProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008091-CH1-SW1">Concurrency Programming Guide</a></li>
+<li><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/index.html#//apple_ref/occ/instp/NSOperation/queuePriority">NSOperation Class Reference</a></li>
+<li><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperationQueue_class/index.html#//apple_ref/occ/cl/NSOperationQueue">NSOperationQueue Class Reference</a></li>
+</ul>
+
+
+<br><br><br><br><br>
+
+]]></content>
+  </entry>
+  
+</feed>

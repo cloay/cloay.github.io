@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: qq, | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/qq/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2016-04-23T18:03:38+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[仿QQ5.0Android版 在锁屏桌面显示消息框]]></title>
+    <link href="http://cloay.com/blog/2014/08/25/fang-qq5-dot-0androidban-zai-suo-ping-zhuo-mian-xian-shi-xiao-xi-kuang/"/>
+    <updated>2014-08-25T21:34:00+08:00</updated>
+    <id>http://cloay.com/blog/2014/08/25/fang-qq5-dot-0androidban-zai-suo-ping-zhuo-mian-xian-shi-xiao-xi-kuang</id>
+    <content type="html"><![CDATA[<p>QQ5.0 for Android发布一段时间了，UI交互大调整，感受了一下很不习惯。不过新增了一个很赞的功能，当手机处于锁屏状态是有新消息提示时会在桌面显示一个消息框，并且可以直接回复信息，真的很方便。于是试着自己实现该功能。仔细想了想，大致思路如下：</p>
+
+
+<!-- more -->
+
+
+<p>后台service监听消息，当消息到达时，判断当前手机是否处于锁屏状态。如果是则在桌面显示消息框。关键点是如何在锁屏桌面显示消息框。我们仔细观察不难发现，QQ并没有直接在桌面显示消息框，而是极有可能替换了锁屏界面。试着尝试了一下基本实现了该功能。新建一个Theme为Wallpaper的Activity，并将布局定义成对话框样式。在onCreate(Bundle savedInstanceState)方法中加入如下代码：</p>
+
+
+<p>```java</p>
+
+<pre><code>@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Window window = getWindow();
+    window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+    window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+    window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+    setContentView(R.layout.alert_layout);
+
+    titleTextV = (TextView) findViewById(R.id.msg_title_textV);
+    titleTextV.setText("New message: ");
+    msgTextV = (TextView) findViewById(R.id.msg_content_textV);
+    msgTextV.setText("Hi, I am cloay!");
+
+    cancleBtn = (Button) findViewById(R.id.alert_cancle_btn);
+    cancleBtn.setOnClickListener(this);
+    okBtn = (Button) findViewById(R.id.alert_ok_btn);
+    okBtn.setOnClickListener(this);
+}
+</code></pre>
+
+<p>```</p>
+
+<p>当消息到达时，弹出对话框。对话框有取消和确定两个按钮，取消按钮点击返回锁屏界面，点击确定按钮进入应用。锁屏需要获取相应权限，新建一个MyAdminReceiver并在清单文件中加入如下代码：</p>
+
+
+<p>```xml</p>
+
+<pre><code>&lt;receiver android:name="com.cloay.alertnotifidemo.MyAdminReceiver" &gt;
+        &lt;meta-data android:name="android.app.device_admin"
+            android:resource="@xml/my_admin_receiver"/&gt;
+        &lt;intent-filter &gt;
+            &lt;action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/&gt;
+        &lt;/intent-filter&gt;
+    &lt;/receiver&gt;
+</code></pre>
+
+<p>```</p>
+
+<p>在MainActivity获取权限：</p>
+
+
+<p>```java</p>
+
+<pre><code>DevicePolicyManager policyManager = (DevicePolicyManager) getSystemService(DEVICE_POLICY_SERVICE);
+    ComponentName componentName = new ComponentName(this, MyAdminReceiver.class);
+
+    boolean isAdminActive = policyManager.isAdminActive(componentName);
+    if(!isAdminActive){
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN); 
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName); 
+        startActivity(intent);
+    }
+</code></pre>
+
+<p>```</p>
+
+<p>当点击了取消按钮后,就可以锁屏了，锁屏之后再让对话框消失</p>
+
+
+<p>```java</p>
+
+<pre><code>DevicePolicyManager policyManager = (DevicePolicyManager) getSystemService(DEVICE_POLICY_SERVICE);
+        policyManager.lockNow();
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 1000);
+</code></pre>
+
+<p>```</p>
+
+<p>大致就是这些，实现在锁屏桌面显示消息框。效果如下：</p>
+
+
+<p><img src="https://raw.githubusercontent.com/cloay/AlertNotifiDemo/master/pic.jpg"/><br>
+<a href="https://github.com/cloay/AlertNotifiDemo">完整代码已上传github</a><br></p>
+
+<p>项目中使用Service模仿每隔10秒收到新消息。</p>
+
+
+
+]]></content>
+  </entry>
+  
+</feed>
