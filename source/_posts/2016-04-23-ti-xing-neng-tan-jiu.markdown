@@ -1,0 +1,107 @@
+---
+layout: post
+title: "离屏渲染问题性能探究"
+date: 2016-04-23 16:50
+comments: true
+categories: performance,offscreenr-ender,离屏渲染
+---
+
+应用程序的性能是衡量一个应用程序质量的重要指标，通常来说程序的性能是指程序对操作（包含用户操作）响应的快慢，也就是程序的流畅性。影响性能的因素有很多比如网络、I/O操作、图像文本绘制等等。本文所要探究的是关于绘制方面的内容，我们从最底层的像素绘制出发，了解底层绘制的基本原理来分析离屏渲染（Offscreen rendering）是怎么回事，离屏渲染是怎么影响性能的，如何解决离屏渲染产生的性能问题。
+
+<!-- more -->
+
+<br>
+#一、绘制原理
+要了解绘制原理，首先我们要知道图形堆栈的概念。像素在映射到屏幕上的时候每一个像素有红绿蓝三原色组成的颜色单元格构成。我们可以趴在传统的CRT显示器屏幕看一下，能够清晰的看到屏幕是有一个一个红绿蓝相隔的单元格构成的。图形堆栈负责屏幕上数以百万计颜色单元的显示，在手机上每当屏幕滚动时，数以百万计的颜色单元必须以每秒60次的速度刷新，这是一个很大的工作量。我们再看看将App显示到屏幕上的流程图：
+
+![tableview](http://img.objccn.io/issue-3/pixels-software-stack.png)
+
+App上的视图通过Cocoa框架（包括Core Graphics，Core Animation，Core Image等，它们是对OpenGL的封装）渲染绘制，避免了我们直接调用底层晦涩难懂的OpenGL的API。OpenGL 和 GPU 密切的合作以提高GPU的能力，并实现硬件加速渲染。GPU 是一个专门为图形高并发计算而量身定做的处理单元，它并发的本性让它能高效的将不同纹理合成起来，GPU 非常快，并且比 CPU 使用更少的电来完成工作。GPU 需要将每一个 frame 的纹理(位图)合成在一起(一秒60次)。每一个纹理会占用 VRAM(video RAM)，所以需要给 GPU 同时保持纹理的数量做一个限制。
+
+在iOS平台上几乎所有的东西都是通过 Core Animation 绘制出来的，一些游戏等应用直接使用 OpenGL/OpenGL ES 进行绘制。Core Animation通过将视图的内容缓存到一张bitmap位图中直接通过硬件加速进行绘制也就是通过GPU。还有一些Quartz / Core Graphics等是直接通过CPU进行绘制的，比如我们常见的View中drawRect方法就是在主线程上通过CPU直接绘制的，两种方式性能相差很大。
+
+<br>
+#二、离屏渲染
+###1、什么是离屏渲染(Offscreen rendering)
+离屏渲染指的是将视图绘制到当前屏幕前，先在屏幕外进行一次渲染之后再绘制到当前屏幕。创建额外的屏幕外缓冲区使得 GPU 需要多做一步操作，一般情况下，要尽量避免离屏渲染。因为离屏渲染合成计算是非常昂贵的，直接将图层合成到帧的缓冲区中(在屏幕上)比离屏渲染（先创建屏幕外缓冲区然后渲染到纹理中最后将结果渲染到帧的缓冲区中）要廉价很多。因为这其中涉及两次昂贵的环境转换(转换环境到屏幕外缓冲区，然后转换环境到帧缓冲区)。
+
+当我们需要重复利用复杂内容不变的图层时，我们可以强制离屏渲染缓存那些图层，然后可以用缓存作为合成的结果绘制到屏幕上。比如有时候我们需要对layer进行动画，我们就可以使用离屏渲染。当使用离屏渲染时，GPU 第一次会混合所有图层到一个基于新的纹理的位图缓存上，然后使用这个纹理来绘制到屏幕上。现在，当这些图层一起移动的时候，GPU 便可以复用这个位图缓存，并且只需要做很少的工作。下面是通过Core Animation对layer做动画的过程：
+
+![tableview](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/Art/basics_layer_rendering_2x.png)
+
+如果我们需要重绘缓存的图层可以设置shouldRasterize为YES来进行重建。但当需要大量频繁的创建这样的图层（离屏渲染）时，会带来大量的资源损耗，这个时候GPU不能及时处理的帧就会被丢掉，频幕看起来就会卡顿。
+
+
+###2、查看离屏渲染
+模拟器查看Offscreen-rendering可以通过打开模拟器debug菜单勾选Color Offscreen-Renerder，离屏渲染的元素会被黄色的方块覆盖，如下图：
+
+![tableview](http://cloay.com/images/offscreen/IMG_3048.png)
+
+也可以使用Instrumengts选择Core Animation，然后勾选右下角Color Offscreen-Renerder选项即可，勾选Color Hits Green and Misses Red选项可以查看那些离屏渲染被复用了，绿色表示被复用红色表示被重新创建了。当离屏渲染的位图缓存被重建了那么就需要重新权衡一下是否应该使用离屏渲染。
+
+###3、常见的离屏渲染情形
+
+1. 为layer使用蒙板（mask）比如圆角效果（圆角是特殊的蒙板）描边等
+2. 设置阴影效果（shadow）
+3. 设置了masksToBounds, clipsToBounds, shouldRasterize属性值为YES
+4. CASharpLayer矢量图形
+比如我们常见的TableView中，每个cell都有一些使用layer的cornerRadius属性切圆角(见下图：)
+
+![tableview](http://cloay.com/images/offscreen/IMG_3048.png)
+
+我们通常又对cell进行了重用，当我们滚动tableview时，被复用的cell的内容又发生了变化就需要重新绘制。这时就会产生大量离屏渲染对性能产生损耗，tableview滚动也就没有那么流畅了。
+
+###4、提高绘制性能的Tips
+1. 当我们需要圆角效果时，可以使用一张中间透明图片蒙上去。或者使用代码手动生成圆角Image设置到要显示的View上
+2. 使用ShadowPath指定layer阴影效果路径
+4. 使用异步进行layer渲染（Facebook开源的异步绘制框架[AsyncDisplayKit](https://github.com/facebook/AsyncDisplayKit)）
+5. 设置layer的opaque值为YES，减少复杂图层合成
+6. 尽量使用不包含透明（alpha）通道的图片资源
+7. 尽量设置layer的大小值为整形值
+
+使用代码手动生成圆角Image后，再看已经没有离屏渲染问题了，帧率也从40左右上升到了差不多60了。
+
+![tableview](http://cloay.com/images/offsceen/IMG_3033.png)
+![tableview](http://cloay.com/images/offscreen/IMG_3039.png)
+
+生产图片圆角代码:
+
+```objective-c
+- (UIImage *)tf_imageWithRoundedCorners:(CGSize)size cornerRadius:(CGFloat)radius borderWidth:(CGFloat)border{
+    if (border > size.width) {
+        border = 1.f;
+    }
+    
+    CGRect rect = (CGRect){0.f, 0.f, size};
+    
+    UIGraphicsBeginImageContextWithOptions(size, NO, UIScreen.mainScreen.scale);
+    
+    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(border, border, size.width - 2*border, size.height - 2*border) cornerRadius:radius - border];
+    path.lineWidth = border;
+    [[UIColor hexStringToColor:@"#bbbbbb"] setStroke];
+    [path stroke];
+    CGContextAddPath(UIGraphicsGetCurrentContext(), path.CGPath);
+    CGContextClip(UIGraphicsGetCurrentContext());
+    
+    [self drawInRect:rect];
+    
+    UIImage *output = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return output;
+}
+```
+<br>
+#三、总结
+应用程序的性能非常重要。影响性能的问题有多个方面，通过了解底层绘制的基本原理，使我们能够快速定位和解决问题。本文主要介绍了离屏渲染相关的内容，在内容不变的情形下可以重复利用位图缓存加速绘制。但当大量频繁进行离屏渲染时会对性能造成很大的损耗。在使用离屏渲染的时候，一定要权衡好性能问题。
+
+
+参考链接：
+
+* [Core Animation Programming Guide](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html)
+* [Getting Pixels onto the Screen](https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/)
+* [iOS 保持界面流畅的技巧](http://blog.ibireme.com/2015/11/12/smooth_user_interfaces_for_ios/)
+
+<br>
+<br>
+<br>
+
