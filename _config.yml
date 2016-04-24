@@ -70,10 +70,10 @@ github_skip_forks: true
 
 # Twitter
 # twitter_user: cloay
-# twitter_tweet_button: false
+# twitter_tweet_button: true 
 
 # Weibo
-weibo_user: cloay
+weibo_user: cloay 
 
 
 # Google +1
@@ -98,7 +98,7 @@ disqus_short_name:
 disqus_show_comment_count: 5 
 
 # Google Analytics
-google_analytics_tracking_id: UA-45666042-1
+google_analytics_tracking_id: UA-45666042-1 
 
 # Facebook Like
 facebook_like: true 
