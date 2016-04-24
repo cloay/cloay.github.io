@@ -67,8 +67,14 @@
         <lastmod>2016-04-23T18:02:31+08:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://cloay.com/blog/2016/04/24/increasing-performance-by-reducing-dynamic-dispatch/
+        </loc>
+        <lastmod>2016-04-24T15:08:13+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://cloay.com/blog/archives/</loc>
-        <lastmod>2016-04-23T18:02:31+08:00</lastmod>
+        <lastmod>2016-04-24T15:08:13+08:00</lastmod>
     </url>
     <url>
         <loc>http://cloay.com/blog/categories/</loc>
@@ -76,7 +82,7 @@
     </url>
     <url>
         <loc>http://cloay.com/</loc>
-        <lastmod>2016-04-23T18:02:31+08:00</lastmod>
+        <lastmod>2016-04-24T15:08:13+08:00</lastmod>
     </url>
     <url>
         <loc>http://cloay.com/robots.txt</loc>
