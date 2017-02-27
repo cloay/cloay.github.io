@@ -1,0 +1,287 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>iOS动态库注入实践-伪造微信定位 - 尚卫民的博客</title>
+	<meta name="author" content="Weimin">
+
+	
+	<meta name="description" content="iOS动态库注入实践-伪造微信定位 原理：创建一个动态库利用oc的runtime特性替换定位相关回调方法伪造GPS坐标，然后将动态库注入微信。 伪造GPS坐标 原理图： 替换CLLocationManager的setDelegate:方法， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="尚卫民的博客" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://cloay.com/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45666042-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	<img src="http://tp2.sinaimg.cn/1908981065/180/5753928464/1" alt="Profile Picture" style="width: 160px;" />
+        <!--
+	
+	<script src="/javascripts/md5.js">
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://tp2.sinaimg.cn/1908981065/180/5753928464/1' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	-->
+</div>
+<hgroup>
+  <h1><a href="/">尚卫民的博客</a></h1>
+  
+    <h2>Passion,interest it's not the same thing.</h2>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    热爱编程专注于iOS，Android，目前工作在北京。
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:shangrody@gmail.com" title="Email">Email</a>
+		
+		
+                        <a class="weibo" href="http://weibo.com/cloay" title="weibo">Weibo</a>
+                
+		
+		
+		
+		
+			<a class="github" href="https://github.com/cloay" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS动态库注入实践-伪造微信定位</h1>
+	<div class="entry-content" itemprop="articleBody"><p>原理：创建一个动态库利用oc的runtime特性替换定位相关回调方法伪造GPS坐标，然后将动态库注入微信。</p>
+
+<h2>伪造GPS坐标</h2>
+
+<p>原理图：</p>
+
+<p><img src="http://cloay.com/images/fake.jpg" alt="fake" /></p>
+
+<p>替换CLLocationManager的setDelegate:方法，将CLLocationManager的delegate替换为我们自定义的WMLocationProxy代理类，WMLocationProxy持有真正的CLLocationManager的delegate。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">wm_setDelegate:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">delegate</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">WMLocationProxy</span> <span class="o">*</span><span class="n">proxy</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WMLocationProxy</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">proxy</span><span class="p">.</span><span class="n">oLMDelegate</span> <span class="o">=</span> <span class="n">delegate</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">wm_setDelegate:</span><span class="n">proxy</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<!-- more -->
+
+
+<p>在WMLocationProxy中转发CLLocationManagerDelegate的方法时先替换位置坐标，然后再转发给CLLocationManagerDelegate。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">forwardInvocation:</span><span class="p">(</span><span class="n">NSInvocation</span> <span class="o">*</span><span class="p">)</span><span class="nv">anInvocation</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">oLMDelegate</span> <span class="o">&amp;&amp;</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">oLMDelegate</span> <span class="nl">respondsToSelector:</span><span class="n">anInvocation</span><span class="p">.</span><span class="n">selector</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">anInvocation</span><span class="p">.</span><span class="n">selector</span> <span class="o">==</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">locationManager:didUpdateToLocation:fromLocation:</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">CLLocation</span> <span class="o">*</span><span class="n">originLocation</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">getArgument:</span><span class="o">&amp;</span><span class="n">originLocation</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">CLLocation</span> <span class="o">*</span><span class="n">newLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">makeFakeLocationWithOriginLocation:</span><span class="n">originLocation</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">setArgument:</span><span class="o">&amp;</span><span class="n">newLocation</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">anInvocation</span><span class="p">.</span><span class="n">selector</span> <span class="o">==</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">locationManager:didUpdateLocations:</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">__unsafe_unretained</span> <span class="n">NSArray</span> <span class="o">*</span><span class="n">locations</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">getArgument:</span><span class="o">&amp;</span><span class="n">locations</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">locations</span><span class="p">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">CLLocation</span> <span class="o">*</span><span class="n">originLocation</span> <span class="o">=</span> <span class="n">locations</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>                <span class="n">CLLocation</span> <span class="o">*</span><span class="n">fakeLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">makeFakeLocationWithOriginLocation:</span><span class="n">originLocation</span><span class="p">];</span>
+</span><span class='line'>                <span class="n">NSArray</span> <span class="o">*</span><span class="n">fakeLocations</span> <span class="o">=</span> <span class="err">@</span><span class="p">[</span><span class="n">fakeLocation</span><span class="p">];</span>
+</span><span class='line'>                <span class="n">self</span><span class="p">.</span><span class="n">orginLocations</span> <span class="o">=</span> <span class="n">fakeLocations</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">setArgument:</span><span class="o">&amp;</span><span class="n">fakeLocations</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">invokeWithTarget:</span><span class="n">self</span><span class="p">.</span><span class="n">oLMDelegate</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>动态库（Dynamic library）注入</h2>
+
+<p>iOS8发布之后Xcode允许创建动态库，我们可以创建一个动态库和原ipa文件合并重新打包ipa。具体参考<a href="https://github.com/depoon/iOSDylibInjectionDemo">iOSDylibInjectionDemo</a></p>
+
+<p>stackoverflow关于动态库的问题可以看看</p>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15331056/library-static-dynamic-or-framework-project-inside-another-project">Library? Static? Dynamic? Or Framework? Project inside another project</a></li>
+<li><a href="https://stackoverflow.com/questions/4733847/can-you-build-dynamic-libraries-for-ios-and-load-them-at-runtime">Can you build dynamic libraries for iOS and load them at runtime?</a></li>
+</ul>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"cloay"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END -->
+</div>
+  </section>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2017 - Weimin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

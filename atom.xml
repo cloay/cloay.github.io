@@ -4,7 +4,7 @@
   <title><![CDATA[尚卫民的博客]]></title>
   <link href="http://cloay.com/atom.xml" rel="self"/>
   <link href="http://cloay.com/"/>
-  <updated>2016-07-20T11:10:55+08:00</updated>
+  <updated>2017-02-27T18:45:52+08:00</updated>
   <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Weimin]]></name>
@@ -12,6 +12,120 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS动态库注入实践-伪造微信定位]]></title>
+    <link href="http://cloay.com/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei/"/>
+    <updated>2017-02-27T18:29:00+08:00</updated>
+    <id>http://cloay.com/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei</id>
+    <content type="html"><![CDATA[<p>原理：创建一个动态库利用oc的runtime特性替换定位相关回调方法伪造GPS坐标，然后将动态库注入微信。</p>
+
+<h2>伪造GPS坐标</h2>
+
+<p>原理图：</p>
+
+<p><img src="http://cloay.com/images/fake.jpg" alt="fake" /></p>
+
+<p>替换CLLocationManager的setDelegate:方法，将CLLocationManager的delegate替换为我们自定义的WMLocationProxy代理类，WMLocationProxy持有真正的CLLocationManager的delegate。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">wm_setDelegate:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">delegate</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">WMLocationProxy</span> <span class="o">*</span><span class="n">proxy</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WMLocationProxy</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">proxy</span><span class="p">.</span><span class="n">oLMDelegate</span> <span class="o">=</span> <span class="n">delegate</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">wm_setDelegate:</span><span class="n">proxy</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<!-- more -->
+
+
+<p>在WMLocationProxy中转发CLLocationManagerDelegate的方法时先替换位置坐标，然后再转发给CLLocationManagerDelegate。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">forwardInvocation:</span><span class="p">(</span><span class="n">NSInvocation</span> <span class="o">*</span><span class="p">)</span><span class="nv">anInvocation</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">oLMDelegate</span> <span class="o">&amp;&amp;</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">oLMDelegate</span> <span class="nl">respondsToSelector:</span><span class="n">anInvocation</span><span class="p">.</span><span class="n">selector</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">anInvocation</span><span class="p">.</span><span class="n">selector</span> <span class="o">==</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">locationManager:didUpdateToLocation:fromLocation:</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">CLLocation</span> <span class="o">*</span><span class="n">originLocation</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">getArgument:</span><span class="o">&amp;</span><span class="n">originLocation</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">CLLocation</span> <span class="o">*</span><span class="n">newLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">makeFakeLocationWithOriginLocation:</span><span class="n">originLocation</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">setArgument:</span><span class="o">&amp;</span><span class="n">newLocation</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">anInvocation</span><span class="p">.</span><span class="n">selector</span> <span class="o">==</span> <span class="k">@selector</span><span class="p">(</span><span class="nl">locationManager:didUpdateLocations:</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">__unsafe_unretained</span> <span class="n">NSArray</span> <span class="o">*</span><span class="n">locations</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">getArgument:</span><span class="o">&amp;</span><span class="n">locations</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">locations</span><span class="p">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">CLLocation</span> <span class="o">*</span><span class="n">originLocation</span> <span class="o">=</span> <span class="n">locations</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>                <span class="n">CLLocation</span> <span class="o">*</span><span class="n">fakeLocation</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">makeFakeLocationWithOriginLocation:</span><span class="n">originLocation</span><span class="p">];</span>
+</span><span class='line'>                <span class="n">NSArray</span> <span class="o">*</span><span class="n">fakeLocations</span> <span class="o">=</span> <span class="err">@</span><span class="p">[</span><span class="n">fakeLocation</span><span class="p">];</span>
+</span><span class='line'>                <span class="n">self</span><span class="p">.</span><span class="n">orginLocations</span> <span class="o">=</span> <span class="n">fakeLocations</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">setArgument:</span><span class="o">&amp;</span><span class="n">fakeLocations</span> <span class="nl">atIndex:</span><span class="mi">3</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">anInvocation</span> <span class="nl">invokeWithTarget:</span><span class="n">self</span><span class="p">.</span><span class="n">oLMDelegate</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>动态库（Dynamic library）注入</h2>
+
+<p>iOS8发布之后Xcode允许创建动态库，我们可以创建一个动态库和原ipa文件合并重新打包ipa。具体参考<a href="https://github.com/depoon/iOSDylibInjectionDemo">iOSDylibInjectionDemo</a></p>
+
+<p>stackoverflow关于动态库的问题可以看看</p>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15331056/library-static-dynamic-or-framework-project-inside-another-project">Library? Static? Dynamic? Or Framework? Project inside another project</a></li>
+<li><a href="https://stackoverflow.com/questions/4733847/can-you-build-dynamic-libraries-for-ios-and-load-them-at-runtime">Can you build dynamic libraries for iOS and load them at runtime?</a></li>
+</ul>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[WebView loading https content]]></title>
