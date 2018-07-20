@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: afnetworking,asi,ios,iphone,apple | Cloay's blog!]]></title>
-  <link href="http://cloay.github.io/blog/categories/afnetworking-asi-ios-iphone-apple/atom.xml" rel="self"/>
-  <link href="http://cloay.github.io/"/>
-  <updated>2013-11-21T10:57:26+08:00</updated>
-  <id>http://cloay.github.io/</id>
+  <title><![CDATA[Category: afnetworking,asi,ios,iphone,apple | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/afnetworking-asi-ios-iphone-apple/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2017-02-27T18:45:52+08:00</updated>
+  <id>http://cloay.com/</id>
   <author>
-    <name><![CDATA[Cloay]]></name>
+    <name><![CDATA[Weimin]]></name>
     <email><![CDATA[shangrody@gmail.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[AFNetworking的简单使用]]></title>
-    <link href="http://cloay.github.io/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/"/>
+    <link href="http://cloay.com/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/"/>
     <updated>2013-11-12T15:01:00+08:00</updated>
-    <id>http://cloay.github.io/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong</id>
+    <id>http://cloay.com/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong</id>
     <content type="html"><![CDATA[<p>简单登录使用</p>
 
 

@@ -1,35 +1,101 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
-        <loc>http://cloay.github.io/blog/2013/11/11/hello-world/</loc>
-        <lastmod>2013-11-12T16:48:30+08:00</lastmod>
+        <loc>http://cloay.com/blog/2013/11/11/hello-world/</loc>
+        <lastmod>2013-12-11T08:47:10+08:00</lastmod>
     </url>
     <url>
-        <loc>http://cloay.github.io/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/</loc>
-        <lastmod>2013-11-13T14:58:04+08:00</lastmod>
+        <loc>http://cloay.com/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/</loc>
+        <lastmod>2013-12-11T08:47:10+08:00</lastmod>
     </url>
     <url>
-        <loc>http://cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/</loc>
-        <lastmod>2013-11-13T14:55:58+08:00</lastmod>
+        <loc>http://cloay.com/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/</loc>
+        <lastmod>2013-12-11T08:47:10+08:00</lastmod>
     </url>
     <url>
-        <loc>http://cloay.github.io/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong/</loc>
-        <lastmod>2013-11-15T14:56:16+08:00</lastmod>
+        <loc>http://cloay.com/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong/</loc>
+        <lastmod>2014-04-25T23:15:25+08:00</lastmod>
     </url>
     <url>
-        <loc>http://cloay.github.io/blog/archives/</loc>
-        <lastmod>2013-11-15T14:56:16+08:00</lastmod>
+        <loc>http://cloay.com/blog/2013/12/15/iosying-yong-kai-fa-chang-yong-di-san-fang-ku/</loc>
+        <lastmod>2013-12-15T23:15:03+08:00</lastmod>
     </url>
     <url>
-        <loc>http://cloay.github.io/blog/categories/</loc>
-        <lastmod>2013-11-12T16:38:37+08:00</lastmod>
+        <loc>
+            http://cloay.com/blog/2014/01/20/fang-wang-yi-xin-wen-dian-ji-tu-pian-fang-da-dong-hua/
+        </loc>
+        <lastmod>2014-01-20T21:54:54+08:00</lastmod>
     </url>
     <url>
-        <loc>http://cloay.github.io/</loc>
-        <lastmod>2013-11-15T14:56:16+08:00</lastmod>
+        <loc>http://cloay.com/blog/2014/04/25/ji-ben-jia-mi-suan-fa/</loc>
+        <lastmod>2014-04-28T00:52:35+08:00</lastmod>
     </url>
     <url>
-        <loc>http://cloay.github.io/robots.txt</loc>
-        <lastmod>2013-11-11T18:22:33+08:00</lastmod>
+        <loc>http://cloay.com/blog/2014/05/15/pagecontrolandroidzhong-de-shi-xian/</loc>
+        <lastmod>2014-05-15T23:01:49+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://cloay.com/blog/2014/07/23/li-yong-swiperefreshlayouthe-loadmorelistviewshi-xian-xia-la-shua-xin-he-shang-la-jia-zai-geng-duo/
+        </loc>
+        <lastmod>2014-07-23T21:01:50+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://cloay.com/blog/2014/08/08/androizi-ding-yi-viewzhan-shi-biao-qian/</loc>
+        <lastmod>2014-08-08T20:34:57+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://cloay.com/blog/2014/08/25/fang-qq5-dot-0androidban-zai-suo-ping-zhuo-mian-xian-shi-xiao-xi-kuang/
+        </loc>
+        <lastmod>2014-08-25T22:16:31+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://cloay.com/blog/2016/03/17/iosduo-xian-cheng-shi-xian-fang-shi-zhi-gcdxiang-jie/
+        </loc>
+        <lastmod>2016-03-18T15:54:03+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://cloay.com/blog/2016/03/26/duo-xian-cheng-shi-xian-zhi-nsoperationhe-nsoperationqueue/
+        </loc>
+        <lastmod>2016-03-26T23:17:22+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://cloay.com/blog/2016/04/23/ti-xing-neng-tan-jiu/</loc>
+        <lastmod>2016-04-23T18:02:31+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://cloay.com/blog/2016/04/24/increasing-performance-by-reducing-dynamic-dispatch/
+        </loc>
+        <lastmod>2016-04-24T15:08:13+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://cloay.com/blog/2016/07/20/webview-loading-https-content/</loc>
+        <lastmod>2016-07-20T00:57:11+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://cloay.com/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei/
+        </loc>
+        <lastmod>2017-02-27T18:41:49+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://cloay.com/blog/archives/</loc>
+        <lastmod>2017-02-27T18:41:49+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://cloay.com/blog/categories/</loc>
+        <lastmod>2013-12-11T08:47:10+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://cloay.com/</loc>
+        <lastmod>2017-02-27T18:41:49+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://cloay.com/robots.txt</loc>
+        <lastmod>2013-12-11T08:47:10+08:00</lastmod>
     </url>
 </urlset>

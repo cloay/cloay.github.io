@@ -1,0 +1,332 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>离屏渲染问题性能探究 - 尚卫民的博客</title>
+	<meta name="author" content="Weimin">
+
+	
+	<meta name="description" content="离屏渲染问题性能探究 应用程序的性能是衡量一个应用程序质量的重要指标，通常来说程序的性能是指程序对操作（包含用户操作）响应的快慢，也就是程序的流畅性。影响性能的因素有很多比如网络、I/O操作、图像文本绘制等等。本文所要探究的是关于绘制方面的内容，我们从最底层的像素绘制出发， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="尚卫民的博客" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://cloay.com/blog/2016/04/23/ti-xing-neng-tan-jiu/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45666042-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	<img src="http://tp2.sinaimg.cn/1908981065/180/5753928464/1" alt="Profile Picture" style="width: 160px;" />
+        <!--
+	
+	<script src="/javascripts/md5.js">
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://tp2.sinaimg.cn/1908981065/180/5753928464/1' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	-->
+</div>
+<hgroup>
+  <h1><a href="/">尚卫民的博客</a></h1>
+  
+    <h2>Passion,interest it's not the same thing.</h2>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    热爱编程专注于iOS，Android，目前工作在北京。
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:shangrody@gmail.com" title="Email">Email</a>
+		
+		
+                        <a class="weibo" href="http://weibo.com/cloay" title="weibo">Weibo</a>
+                
+		
+		
+		
+		
+			<a class="github" href="https://github.com/cloay" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">离屏渲染问题性能探究</h1>
+	<div class="entry-content" itemprop="articleBody"><p>应用程序的性能是衡量一个应用程序质量的重要指标，通常来说程序的性能是指程序对操作（包含用户操作）响应的快慢，也就是程序的流畅性。影响性能的因素有很多比如网络、I/O操作、图像文本绘制等等。本文所要探究的是关于绘制方面的内容，我们从最底层的像素绘制出发，了解底层绘制的基本原理来分析离屏渲染（Offscreen rendering）是怎么回事，离屏渲染是怎么影响性能的，如何解决离屏渲染产生的性能问题。</p>
+
+<!-- more -->
+
+
+
+
+<br>
+
+
+<h1>一、绘制原理</h1>
+
+<p>要了解绘制原理，首先我们要知道图形堆栈的概念。像素在映射到屏幕上的时候每一个像素有红绿蓝三原色组成的颜色单元格构成。我们可以趴在传统的CRT显示器屏幕看一下，能够清晰的看到屏幕是有一个一个红绿蓝相隔的单元格构成的。图形堆栈负责屏幕上数以百万计颜色单元的显示，在手机上每当屏幕滚动时，数以百万计的颜色单元必须以每秒60次的速度刷新，这是一个很大的工作量。我们再看看将App显示到屏幕上的流程图：</p>
+
+<p><img src="http://img.objccn.io/issue-3/pixels-software-stack.png" alt="tableview" /></p>
+
+<p>App上的视图通过Cocoa框架（包括Core Graphics，Core Animation，Core Image等，它们是对OpenGL的封装）渲染绘制，避免了我们直接调用底层晦涩难懂的OpenGL的API。OpenGL 和 GPU 密切的合作以提高GPU的能力，并实现硬件加速渲染。GPU 是一个专门为图形高并发计算而量身定做的处理单元，它并发的本性让它能高效的将不同纹理合成起来，GPU 非常快，并且比 CPU 使用更少的电来完成工作。GPU 需要将每一个 frame 的纹理(位图)合成在一起(一秒60次)。每一个纹理会占用 VRAM(video RAM)，所以需要给 GPU 同时保持纹理的数量做一个限制。</p>
+
+<p>在iOS平台上几乎所有的东西都是通过 Core Animation 绘制出来的，一些游戏等应用直接使用 OpenGL/OpenGL ES 进行绘制。Core Animation通过将视图的内容缓存到一张bitmap位图中直接通过硬件加速进行绘制也就是通过GPU。还有一些Quartz / Core Graphics等是直接通过CPU进行绘制的，比如我们常见的View中drawRect方法就是在主线程上通过CPU直接绘制的，两种方式性能相差很大。</p>
+
+<br>
+
+
+<h1>二、离屏渲染</h1>
+
+<h3>1、什么是离屏渲染(Offscreen rendering)</h3>
+
+<p>离屏渲染指的是将视图绘制到当前屏幕前，先在屏幕外进行一次渲染之后再绘制到当前屏幕。创建额外的屏幕外缓冲区使得 GPU 需要多做一步操作，一般情况下，要尽量避免离屏渲染。因为离屏渲染合成计算是非常昂贵的，直接将图层合成到帧的缓冲区中(在屏幕上)比离屏渲染（先创建屏幕外缓冲区然后渲染到纹理中最后将结果渲染到帧的缓冲区中）要廉价很多。因为这其中涉及两次昂贵的环境转换(转换环境到屏幕外缓冲区，然后转换环境到帧缓冲区)。</p>
+
+<p>当我们需要重复利用复杂内容不变的图层时，我们可以强制离屏渲染缓存那些图层，然后可以用缓存作为合成的结果绘制到屏幕上。比如有时候我们需要对layer进行动画，我们就可以使用离屏渲染。当使用离屏渲染时，GPU 第一次会混合所有图层到一个基于新的纹理的位图缓存上，然后使用这个纹理来绘制到屏幕上。现在，当这些图层一起移动的时候，GPU 便可以复用这个位图缓存，并且只需要做很少的工作。下面是通过Core Animation对layer做动画的过程：</p>
+
+<p><img src="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/Art/basics_layer_rendering_2x.png" alt="tableview" /></p>
+
+<p>如果我们需要重绘缓存的图层可以设置shouldRasterize为YES来进行重建。但当需要大量频繁的创建这样的图层（离屏渲染）时，会带来大量的资源损耗，这个时候GPU不能及时处理的帧就会被丢掉，频幕看起来就会卡顿。</p>
+
+<h3>2、查看离屏渲染</h3>
+
+<p>模拟器查看Offscreen-rendering可以通过打开模拟器debug菜单勾选Color Offscreen-Renerder，离屏渲染的元素会被黄色的方块覆盖，如下图：</p>
+
+<p><img src="http://cloay.com/images/offscreen/IMG_3048.PNG" width="360"></p>
+
+<p>也可以使用Instrumengts选择Core Animation，然后勾选右下角Color Offscreen-Renerder选项即可，勾选Color Hits Green and Misses Red选项可以查看那些离屏渲染被复用了，绿色表示被复用红色表示被重新创建了。当离屏渲染的位图缓存被重建了那么就需要重新权衡一下是否应该使用离屏渲染。</p>
+
+<h3>3、常见的离屏渲染情形</h3>
+
+<ol>
+<li>为layer使用蒙板（mask）比如圆角效果（圆角是特殊的蒙板）描边等</li>
+<li>设置阴影效果（shadow）</li>
+<li>设置了masksToBounds, clipsToBounds, shouldRasterize属性值为YES</li>
+<li>CASharpLayer矢量图形</li>
+</ol>
+
+
+<p>比如我们常见的TableView中，每个cell都有一些使用layer的cornerRadius属性切圆角(见下图：)</p>
+
+<p><img src="http://cloay.com/images/offscreen/IMG_3048.PNG" width="360"></p>
+
+<p>我们通常又对cell进行了重用，当我们滚动tableview时，被复用的cell的内容又发生了变化就需要重新绘制。这时就会产生大量离屏渲染对性能产生损耗，tableview滚动也就没有那么流畅了。</p>
+
+<h3>4、提高绘制性能的Tips</h3>
+
+<ol>
+<li>当我们需要圆角效果时，可以使用一张中间透明图片蒙上去。或者使用代码手动生成圆角Image设置到要显示的View上</li>
+<li>使用ShadowPath指定layer阴影效果路径</li>
+<li>使用异步进行layer渲染（Facebook开源的异步绘制框架<a href="https://github.com/facebook/AsyncDisplayKit">AsyncDisplayKit</a>）</li>
+<li>设置layer的opaque值为YES，减少复杂图层合成</li>
+<li>尽量使用不包含透明（alpha）通道的图片资源</li>
+<li>尽量设置layer的大小值为整形值</li>
+</ol>
+
+
+<p>使用代码手动生成圆角Image后，再看已经没有离屏渲染问题了，帧率也从40左右上升到了差不多60了。</p>
+
+<p><img src="http://cloay.com/images/offscreen/IMG_3033.PNG" width="360">
+<img src="http://cloay.com/images/offscreen/IMG_3039.png" width="360"></p>
+
+<p>生产图片圆角代码:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">UIImage</span> <span class="o">*</span><span class="p">)</span><span class="nf">tf_imageWithRoundedCorners:</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nv">size</span> <span class="nf">cornerRadius:</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nv">radius</span> <span class="nf">borderWidth:</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nv">border</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">border</span> <span class="o">&gt;</span> <span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">border</span> <span class="o">=</span> <span class="mf">1.f</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">CGRect</span> <span class="n">rect</span> <span class="o">=</span> <span class="p">(</span><span class="n">CGRect</span><span class="p">){</span><span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="n">size</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UIGraphicsBeginImageContextWithOptions</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">NO</span><span class="p">,</span> <span class="n">UIScreen</span><span class="p">.</span><span class="n">mainScreen</span><span class="p">.</span><span class="n">scale</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UIBezierPath</span> <span class="o">*</span><span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIBezierPath</span> <span class="nl">bezierPathWithRoundedRect:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="n">border</span><span class="p">,</span> <span class="n">border</span><span class="p">,</span> <span class="n">size</span><span class="p">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">border</span><span class="p">,</span> <span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">border</span><span class="p">)</span> <span class="nl">cornerRadius:</span><span class="n">radius</span> <span class="o">-</span> <span class="n">border</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">path</span><span class="p">.</span><span class="n">lineWidth</span> <span class="o">=</span> <span class="n">border</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[[</span><span class="n">UIColor</span> <span class="nl">hexStringToColor:</span><span class="s">@&quot;#bbbbbb&quot;</span><span class="p">]</span> <span class="n">setStroke</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">path</span> <span class="n">stroke</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">CGContextAddPath</span><span class="p">(</span><span class="n">UIGraphicsGetCurrentContext</span><span class="p">(),</span> <span class="n">path</span><span class="p">.</span><span class="n">CGPath</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">CGContextClip</span><span class="p">(</span><span class="n">UIGraphicsGetCurrentContext</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">drawInRect:</span><span class="n">rect</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UIImage</span> <span class="o">*</span><span class="n">output</span> <span class="o">=</span> <span class="n">UIGraphicsGetImageFromCurrentImageContext</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">UIGraphicsEndImageContext</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">output</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<br>
+
+
+<h1>三、总结</h1>
+
+<p>应用程序的性能非常重要。影响性能的问题有多个方面，通过了解底层绘制的基本原理，使我们能够快速定位和解决问题。本文主要介绍了离屏渲染相关的内容，在内容不变的情形下可以重复利用位图缓存加速绘制。但当大量频繁进行离屏渲染时会对性能造成很大的损耗。在使用离屏渲染的时候，一定要权衡好性能问题。</p>
+
+<p>参考链接：</p>
+
+<ul>
+<li><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html">Core Animation Programming Guide</a></li>
+<li><a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">Getting Pixels onto the Screen</a></li>
+<li><a href="http://blog.ibireme.com/2015/11/12/smooth_user_interfaces_for_ios/">iOS 保持界面流畅的技巧</a></li>
+</ul>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+  <section>
+    <h1>Comments</h1>
+    <div id="comments" aria-live="polite"><!-- Duoshuo Comment BEGIN -->
+<div class="ds-thread"></div>
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"cloay"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+<!-- Duoshuo Comment END -->
+</div>
+  </section>
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2017 - Weimin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

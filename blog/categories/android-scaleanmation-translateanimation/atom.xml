@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Android,ScaleAnmation,TranslateAnimation | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/android-scaleanmation-translateanimation/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2017-02-27T18:45:52+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[仿网易新闻点击图片放大动画]]></title>
+    <link href="http://cloay.com/blog/2014/01/20/fang-wang-yi-xin-wen-dian-ji-tu-pian-fang-da-dong-hua/"/>
+    <updated>2014-01-20T21:16:00+08:00</updated>
+    <id>http://cloay.com/blog/2014/01/20/fang-wang-yi-xin-wen-dian-ji-tu-pian-fang-da-dong-hua</id>
+    <content type="html"><![CDATA[<p>点击新闻中小图，从图片位置以动画的方式逐渐移动到屏幕中心并放大图片<br/>
+具体实现：<br/>
+``` java</p>
+
+<pre><code>public static void browerImage(Activity activity, final ImageView originImageV, final ImageView scaleImageV){
+            int x = originImageV.getLeft();
+            int y = originImageV.getTop();
+</code></pre>
+
+<p>```</p>
+
+<!-- more -->
+
+
+<p>``` java</p>
+
+<pre><code>public static void browerImage(Activity activity, final ImageView originImageV, final ImageView scaleImageV){
+            int x = originImageV.getLeft();
+            int y = originImageV.getTop();
+            DisplayMetrics metrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int width = metrics.widthPixels;
+            AnimationSet animationSet = new AnimationSet(true);
+
+            TranslateAnimation translateAnimation = new TranslateAnimation(
+            Animation.ABSOLUTE, x,
+            Animation.ABSOLUTE, 0,
+            Animation.ABSOLUTE, y,
+            Animation.ABSOLUTE, scaleImageV.getY() - getStatusBarHeight(activity));
+    translateAnimation.setDuration(1500);
+    animationSet.addAnimation(translateAnimation);
+
+    ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, (float)width/originImageV.getWidth(), 1.0f,
+                    (float)width/originImageV.getWidth(), 
+                    Animation.ABSOLUTE, 0,
+            Animation.ABSOLUTE, 0);
+    scaleAnimation.setDuration(1500);
+    animationSet.addAnimation(scaleAnimation);
+
+
+    animationSet.setFillEnabled(true);
+    animationSet.setAnimationListener(new AnimationListener() {
+
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                            originImageV.setVisibility(View.INVISIBLE);
+                            scaleImageV.setVisibility(View.VISIBLE);
+                            originImageV.clearAnimation();
+                    }
+            });
+
+    originImageV.startAnimation(animationSet);
+    }
+</code></pre>
+
+<p><code>
+点击大图返回动画&lt;br/&gt;
+</code> java
+public static void closeImage(Activity activity, final ImageView originImageV, final ImageView scaleImageV){</p>
+
+<pre><code>            int originX = originImageV.getLeft();
+            int originY = originImageV.getTop();
+            int scaleX = scaleImageV.getLeft();
+            int scaleY = scaleImageV.getTop();
+            System.out.println("scaleY: " + scaleY + " bottom: " + scaleImageV.getBottom());
+
+            AnimationSet animationSet = new AnimationSet(true);
+
+            TranslateAnimation translateAnimation = new TranslateAnimation(
+            Animation.ABSOLUTE, scaleX,
+            Animation.ABSOLUTE, originX,
+            Animation.ABSOLUTE, scaleY - getStatusBarHeight(activity),
+            Animation.ABSOLUTE, originY);
+    translateAnimation.setDuration(1500);
+    animationSet.addAnimation(translateAnimation);
+
+    ScaleAnimation scaleAnimation = new ScaleAnimation((float)scaleImageV.getWidth()/originImageV.getWidth(), 1.0f, 
+                    (float)scaleImageV.getWidth()/originImageV.getWidth(), 1.0f,  
+                    Animation.ABSOLUTE, 0,
+            Animation.ABSOLUTE, 0);
+    scaleAnimation.setDuration(1500);
+    animationSet.addAnimation(scaleAnimation);
+
+
+    animationSet.setFillEnabled(true);
+    animationSet.setAnimationListener(new AnimationListener() {
+
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                            scaleImageV.setVisibility(View.INVISIBLE);
+                            originImageV.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                            originImageV.clearAnimation();
+                    }
+            });
+
+    originImageV.startAnimation(animationSet);
+    }
+</code></pre>
+
+<p><code>
+下面是获取状态栏高度&lt;br/&gt;
+</code> java
+/**</p>
+
+<pre><code>    * @Title: getStatusBarHeight 
+    * @Description:  
+    * @param activity
+    * @return int     
+     */
+    public static int getStatusBarHeight(Activity activity){
+            int result = 0;
+               int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+               if (resourceId &gt; 0) {
+                  result = activity.getResources().getDimensionPixelSize(resourceId);
+               }
+               return result;
+    }
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

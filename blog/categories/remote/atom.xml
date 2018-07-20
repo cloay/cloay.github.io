@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: remote | Cloay's blog!]]></title>
-  <link href="http://cloay.github.io/blog/categories/remote/atom.xml" rel="self"/>
-  <link href="http://cloay.github.io/"/>
-  <updated>2013-11-21T10:57:26+08:00</updated>
-  <id>http://cloay.github.io/</id>
+  <title><![CDATA[Category: remote | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/remote/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2017-02-27T18:45:52+08:00</updated>
+  <id>http://cloay.com/</id>
   <author>
-    <name><![CDATA[Cloay]]></name>
+    <name><![CDATA[Weimin]]></name>
     <email><![CDATA[shangrody@gmail.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[git 拉取远程分支到本地]]></title>
-    <link href="http://cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
+    <link href="http://cloay.com/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
     <updated>2013-11-13T11:15:00+08:00</updated>
-    <id>http://cloay.github.io/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
+    <id>http://cloay.com/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
     <content type="html"><![CDATA[<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
 </code></pre>
 

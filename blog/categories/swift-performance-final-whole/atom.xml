@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Swift,performance,final,Whole | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/swift-performance-final-whole/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2017-02-27T18:45:52+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Swift通过减少动态绑定提高性能（译)]]></title>
+    <link href="http://cloay.com/blog/2016/04/24/increasing-performance-by-reducing-dynamic-dispatch/"/>
+    <updated>2016-04-24T14:49:00+08:00</updated>
+    <id>http://cloay.com/blog/2016/04/24/increasing-performance-by-reducing-dynamic-dispatch</id>
+    <content type="html"><![CDATA[<p>本文译自Swift官方博客，原文链接：<a href="https://developer.apple.com/swift/blog/?id=27">Increasing Performance by Reducing Dynamic Dispatch</a></p>
+
+<p>像其他编程语言一样Swift容许重载父类的方法和属性，这就意味着程序要在运行时去决定执行间接的方法调用和属性访问。这种技术被称之为动态绑定（关于动态绑定<a href="https://en.wikipedia.org/wiki/Dynamic_dispatch">dynamic dispatch</a>），这种间接的调用方式增加了语言的表现力但也会增加一定的运行时开销，在性能敏感的代码中这种开销是不可接受的。本文为大家展示使用final和private关键字以及全局模块优化（Whole Module Optimization）三种方式来减少动态绑定提高性能。</p>
+
+<!-- more -->
+
+
+<p>看看下面的例子：</p>
+
+<p>```objective-c
+class ParticleModel {</p>
+
+<pre><code>var point = ( 0.0, 0.0 )
+var velocity = 100.0
+
+func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+    point = newPoint
+    velocity = newVelocity
+}
+
+func update(newP: (Double, Double), newV: Double) {
+    updatePoint(newP, newVelocity: newV)
+}
+</code></pre>
+
+<p>}</p>
+
+<p>var p = ParticleModel()
+for i in stride(from: 0.0, through: 360, by: 1.0) {</p>
+
+<pre><code>p.update((i * sin(i), i), newV:i*1000)
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>上述代码中编译器将会以动态绑定的方式发出的调用有：</p>
+
+<ol>
+<li>对方法update()的调用</li>
+<li>方法updatePoint()的调用</li>
+<li>属性元组point的访问</li>
+<li>属性velocity的访问</li>
+</ol>
+
+
+<p>当我们查看这段代码时发现这不是我们期望的样子。动态调用在这里是非常必要的，因为ParticleModel的子类有可能重载point和velocity这两个计算属性，也可能重载update()和updatePoint()方法。</p>
+
+<p>在Swift中动态绑定的调用是通过从方法列表中查找该函数然后执行一个间接的调用来实现的。这比直接执行一个方法调用要慢。另外，间接的方法调用也会对编译器的优化造成阻碍，这使得间接调用花费更大的开销。在性能要求较高的地方我们可以使用一些技巧去限制不必要的动态特性来提高性能。</p>
+
+<h3>使用final关键字修饰肯定不会被重载的声明</h3>
+
+<p>final关键字修饰的类、方法和属性表示不能被重载，这意味着编译器可以安全的忽略那些需要动态绑定的间接调用。例如，下面代码中属性point和velocity将通过加载类储存变量的形式直接被访问，方法updatePoint()也会以直接方法调用的方式被调用。但另一方面update()方法仍会以动态绑定的形式被调用，仍然容许被子类重载来实现想要的功能。</p>
+
+<p>```objective-c
+class ParticleModel {</p>
+
+<pre><code>final var point = ( x: 0.0, y: 0.0 )
+final var velocity = 100.0
+
+final func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+    point = newPoint
+    velocity = newVelocity
+}
+
+func update(newP: (Double, Double), newV: Double) {
+    updatePoint(newP, newVelocity: newV)
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>将整个类标记为final类也是可行的，这样类将不能被子类化，所有的方法和属性也叫被标记为final类型。</p>
+
+<p>```objective-c
+final class ParticleModel {</p>
+
+<pre><code>var point = ( x: 0.0, y: 0.0 )
+var velocity = 100.0
+// ...
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>将文件中使用private关键字修饰的声明推断为final</h3>
+
+<p>使用private关键字修饰的声明只能在当前文件中进行访问。这样编译器可以找到所有潜在的重载声明。任何没有被重载的声明编译器自动的将它推断为final类型并且去除间接的方法调用和属性访问。</p>
+
+<p>假定在当前的文件中没有任何类继承了ParticleModel类，编译器可以将所有使用private关键字修饰的声明的动态绑定的方法替换为直接的方法调用。</p>
+
+<p>```objective-c
+class ParticleModel {</p>
+
+<pre><code>private var point = ( x: 0.0, y: 0.0 )
+private var velocity = 100.0
+
+private func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+    point = newPoint
+    velocity = newVelocity
+}
+
+func update(newP: (Double, Double), newV: Double) {
+    updatePoint(newP, newVelocity: newV)
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>在上面的例子中，属性point和velocity将会被直接访问，方法updatePoint()被直接调用。然而update()方法仍将以间接的方式调用，因为它不是private类型的。</p>
+
+<p>和final关键字一样，使用private关键字修饰的类会将整个类标记为private类型，类的所有方法和属性也都是private类型的。</p>
+
+<p>```objective-c
+private class ParticleModel {</p>
+
+<pre><code>var point = ( x: 0.0, y: 0.0 )
+var velocity = 100.0
+// ...
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>使用全局模块优化推断internal声明为final</h3>
+
+<p>使用internal（如果声明没有使用关键词修饰，默认是internal）关键字修饰的声明的作用域仅限于它被声明的模块中。因为Swift通常的将这些文件作为一个独立的模块进行编译，所以编译器不能确定一个internal声明有没有在其他的文件中被重载。然而如果全局模块优化（Whole Module Optimization，关于全局模块优化参看下文的相关名词解释）是打开的那么所有的模块将要在同一时间被一起编译。这样以来编译器就可以为整个模块一起做出推断，将没有被重载的internal修饰的声明推断为final类型。</p>
+
+<p>让我们回到最开始的代码，这次为ParticleModel类加上额外public关键字。</p>
+
+<p>```objective-c
+public class ParticleModel {</p>
+
+<pre><code>var point = ( x: 0.0, y: 0.0 )
+var velocity = 100.0
+
+func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+    point = newPoint
+    velocity = newVelocity
+}
+
+public func update(newP: (Double, Double), newV: Double) {
+    updatePoint(newP, newVelocity: newV)
+}
+</code></pre>
+
+<p>}</p>
+
+<p>var p = ParticleModel()
+for i in stride(from: 0.0, through: times, by: 1.0) {</p>
+
+<pre><code>p.update((i * sin(i), i), newV:i*1000)
+</code></pre>
+
+<p>}
+```</p>
+
+<p>当以全局模块优化的方式编译这段代码时，编译器能够推断出属性point，velocity和方法updatePoint()为final类型。与此相反的是被public关键字修饰的update()方法不能被推断为final类型。</p>
+
+<h3>相关名词解释：</h3>
+
+<p>全局模块优化（Whole Module Optimization）是Xcode7提供的Swift新的编译优化方式，可以在build settings进行设置。苹果建议我们在Release模式下使用，全局模块优化模式会减慢编译的速度</p>
+
+<p><img src="http://useyourloaf.com/assets/images/2015/2015-07-26-001.png" alt="Whole Module Optimization" /></p>
+
+<p>参考链接：</p>
+
+<ul>
+<li><a href="http://useyourloaf.com/blog/swift-whole-module-optimization/">Swift Whole Module Optimization</a></li>
+</ul>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+]]></content>
+  </entry>
+  
+</feed>
