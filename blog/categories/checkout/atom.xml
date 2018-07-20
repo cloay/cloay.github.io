@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: checkout | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/checkout/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2018-07-20T10:56:34+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[git 拉取远程分支到本地]]></title>
+    <link href="http://cloay.com/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/"/>
+    <updated>2013-11-13T11:15:00+08:00</updated>
+    <id>http://cloay.com/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di</id>
+    <content type="html"><![CDATA[<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
+</code></pre>
+
+<p>如果遇到类似如下问题：</p>
+
+
+<pre><code>    fatal: git checkout: updating paths is incompatible with switching branches.
+    Did you intend to checkout 'origin/remote-name' which can not be resolved as commit?
+</code></pre>
+
+<!-- more -->
+
+
+<p>使用下面命令</p>
+
+
+<pre><code>    git remote show origin
+    git remote update
+    git fetch
+</code></pre>
+
+<p>再试试</p>
+
+
+<pre><code>    git checkout -b local-name origin/remote-name
+</code></pre>
+
+<p>参考资料:</p>
+
+
+<p> <a href = "http://stackoverflow.com/questions/945654/git-checkout-on-a-remote-branch-does-not-work">Git checkout on a remote branch does not work</a></p>
+]]></content>
+  </entry>
+  
+</feed>
