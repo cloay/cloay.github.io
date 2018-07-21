@@ -104,5 +104,5 @@ google_analytics_tracking_id: UA-45666042-1
 facebook_like: false 
 
 # duoshuo comments
-duoshuo_comments: true 
+duoshuo_comments: false
 duoshuo_short_name: cloay
