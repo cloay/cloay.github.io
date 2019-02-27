@@ -4,7 +4,7 @@
   <title><![CDATA[Category: LinearLayout, | 尚卫民的博客]]></title>
   <link href="http://cloay.com/blog/categories/linearlayout/atom.xml" rel="self"/>
   <link href="http://cloay.com/"/>
-  <updated>2019-02-27T12:28:00+08:00</updated>
+  <updated>2019-02-27T12:48:23+08:00</updated>
   <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Weimin]]></name>
@@ -47,7 +47,7 @@ import android.widget.LinearLayout;</p>
  *
  * @ClassName: CTagView
  * @Description: A costum view for tag list
- * @author cloay Email:<a href="&#109;&#97;&#x69;&#108;&#116;&#111;&#x3a;&#x73;&#104;&#97;&#x6e;&#x67;&#114;&#x6f;&#x64;&#x79;&#64;&#103;&#109;&#x61;&#x69;&#108;&#46;&#x63;&#111;&#109;">&#115;&#104;&#97;&#110;&#103;&#114;&#111;&#x64;&#121;&#x40;&#x67;&#x6d;&#97;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;</a>
+ * @author cloay Email:<a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#111;&#x3a;&#115;&#x68;&#x61;&#x6e;&#x67;&#114;&#x6f;&#x64;&#x79;&#x40;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#111;&#x6d;">&#115;&#x68;&#x61;&#x6e;&#x67;&#114;&#x6f;&#x64;&#x79;&#x40;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#109;</a>
  * @date 2014-8-5 ÉÏÎç10:43:22
  *
  </em>/
