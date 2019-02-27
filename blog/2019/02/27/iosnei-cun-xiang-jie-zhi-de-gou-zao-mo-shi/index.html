@@ -1,0 +1,223 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>iOS内存详解之OC对象的构造模式 - 尚卫民的博客</title>
+	<meta name="author" content="Weimin">
+
+	
+	<meta name="description" content="iOS内存详解之OC对象的构造模式 Cocoa对象的创建分为两个阶段：分配和初始化。也就是两段构造(Two Stage Creation)的模式。没有这两个步骤，一个对象通常是不可用的。尽管几乎在所有情况下，初始化都紧跟在分配之后，但是这两个步骤在对象的形成中起着不同的作用。 一、对象创建过程 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="尚卫民的博客" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://cloay.com/blog/2019/02/27/iosnei-cun-xiang-jie-zhi-de-gou-zao-mo-shi/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45666042-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	<img src="http://tp2.sinaimg.cn/1908981065/180/5753928464/1" alt="Profile Picture" style="width: 160px;" />
+        <!--
+	
+	<script src="/javascripts/md5.js">
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://tp2.sinaimg.cn/1908981065/180/5753928464/1' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	-->
+</div>
+<hgroup>
+  <h1><a href="/">尚卫民的博客</a></h1>
+  
+    <h2>Passion,interest it's not the same thing.</h2>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    热爱编程专注于iOS，Android，目前工作在北京。
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:shangrody@gmail.com" title="Email">Email</a>
+		
+		
+                        <a class="weibo" href="http://weibo.com/cloay" title="weibo">Weibo</a>
+                
+		
+		
+		
+		
+			<a class="github" href="https://github.com/cloay" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS内存详解之OC对象的构造模式</h1>
+	<div class="entry-content" itemprop="articleBody"><p>Cocoa对象的创建分为两个阶段：分配和初始化。也就是两段构造(Two Stage Creation)的模式。没有这两个步骤，一个对象通常是不可用的。尽管几乎在所有情况下，初始化都紧跟在分配之后，但是这两个步骤在对象的形成中起着不同的作用。</p>
+
+<h3>一、对象创建过程</h3>
+
+<ul>
+<li><strong>分配对象</strong></li>
+</ul>
+
+
+<p>当分配一个对象，Cocoa从应用程序虚拟内存区域为对象分配足够的内存。要计算要分配的内存量，需要考虑对象的实例变量包括它们的类型和顺序。</p>
+
+<!-- more -->
+
+
+<p>要分配对象需要发送消息 alloc 或者 allocWithZone:到对象的类。之后将返回该类的“原始”（未初始化）实例。该alloc方法的变体使用应用程序的默认区域。一个zone是页面对齐的内存区域，用于保存应用程序分配的相关对象和数据。
+除了分配内存之外，alloc方法还会执行其他重要操作：</p>
+
+<ol>
+<li>它设置对象的引用计数将计数保留为1。</li>
+<li>它初始化对象的isa，将isa指向对象的类，它是一个从类定义编译的运行时对象。</li>
+<li>它初始化对象所有其他的实例变量为零（或等效类型为零，如nil，NULL和0.0）。</li>
+</ol>
+
+
+<p>总之，分配不仅为对象分配内存，而且还设置它的isa和引用计数。还将对象所有剩余的实例变量设置为零。但是现在生成的对象尚不可用。还必须调用初始化方法例如init进行初始化具有特定特征的对象并返回对象。</p>
+
+<ul>
+<li><strong>初始化对象</strong></li>
+</ul>
+
+
+<p>初始化将对象的实例变量设置为合理且可用的初始值。它还可以分配和准备对象所需的其他全局资源，必要时从外部源（如文件）加载它们。声明实例变量的每个对象都应实现初始化方法 &ndash; 除非默认的set-everything-to-zero初始化足够。如果一个对象没有实现初始化，Cocoa会调用最近的祖先的初始化方法。</p>
+
+<h3>二、两段构造模式的意义</h3>
+
+<p>两段式构造模式符合设计模式的单一（Single Responsibility）原则，所以苹果把这个过程分开放在2个函数（alloc和init）中实现，逻辑上更清晰可读性高。</p>
+
+<p>查询苹果文档我们可以看到alloc方法实际上调用的是allocWithZone:方法。如下图</p>
+
+<p><img src="/images/memory/2/1alloc.png" alt="allocWithZone" /></p>
+
+<p>查看allocWithZone:方法文档也没有过多说明只是说这是一个历史原因遗留的方法，在OC中内存区域zone不再使用。</p>
+
+<p><img src="/images/memory/2/2allocWithZone.png" alt="allocWithZone" /></p>
+
+<p>那么历史原因是什么呢？
+在Cocoa设计模式（Cocoa Design Patterns）一书中详细介绍了所谓的历史原因：早期苹果是建议程序员使用 allocWithZone来管理内存分配的，一个zone是页面对齐的内存区域，用于保存应用程序分配的相关的对象和数据。allowWithZone方法可以允许对象从指定内存区域分配内存。这样做的好处是创建对象时可以把相关联的对象分配到相同的内存区域中，这样做不但减少内存碎片，还可以提高内存的访问效率。在上文中我们说到对象创建时申请内存实际上在虚拟内存系统申请内存，在之前的内存相关概念里我们详细介绍了虚拟内存及虚拟内存是如何影响性能的。将相关联的对象分配到连续的内存区域中，也有助于减少内存分页发生。任何类型的分页，特别是磁盘抖动都会对性能产生负面影响，因为它会迫使系统花费大量时间来读写磁盘。从后备存储中读取页面需要花费大量时间，并且比直接从内存中读取要慢得多。</p>
+
+<p>现在创建对象申请内存时Cocoa本身会进行优化，不需要开发者显示指定内存区域。</p>
+
+<h3>三、总结</h3>
+
+<p>通过对两段式创建对象模式的了解，我们知道对象在创建过程中，如何分配内存和进行初始化的。以及这样设计的原因。在对象申请内存时Cocoa进行了怎样的优化。这对于我们对内存的理解以及优化都有很大帮助。</p>
+
+<h3>参考链接</h3>
+
+<ul>
+<li><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/CocoaObjects.html#//apple_ref/doc/uid/TP40002974-CH4-SW54">Cocoa Object Creation</a></li>
+<li><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011i">Advanced Memory Management Programming Guide</a></li>
+</ul>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2019 - Weimin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

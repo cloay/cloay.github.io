@@ -9,7 +9,7 @@
 	<meta name="author" content="Weimin">
 
 	
-	<meta name="description" content="Apr 23rd, 2016 performance,offscreenr-ender,离屏渲染 离屏渲染问题性能探究 应用程序的性能是衡量一个应用程序质量的重要指标，通常来说程序的性能是指程序对操作（包含用户操作）响应的快慢，也就是程序的流畅性。影响性能的因素有很多比如网络、I/O操作、 &hellip;">
+	<meta name="description" content="Apr 24th, 2016 Module, Optimization,优化, Swift,performance,final,Whole Swift通过减少动态绑定提高性能（译) 本文译自Swift官方博客，原文链接：Increasing Performance by Reducing &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,44 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-04-24T14:49:00+08:00" data-updated="true" itemprop="datePublished">Apr 24<span>th</span>, 2016</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/module/'>Module</a>, <a class='category' href='/blog/categories/optimization-you-hua/'>Optimization,优化</a>, <a class='category' href='/blog/categories/swift-performance-final-whole/'>Swift,performance,final,Whole</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2016/04/24/increasing-performance-by-reducing-dynamic-dispatch/" itemprop="url">Swift通过减少动态绑定提高性能（译)</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>本文译自Swift官方博客，原文链接：<a href="https://developer.apple.com/swift/blog/?id=27">Increasing Performance by Reducing Dynamic Dispatch</a></p>
+
+<p>像其他编程语言一样Swift容许重载父类的方法和属性，这就意味着程序要在运行时去决定执行间接的方法调用和属性访问。这种技术被称之为动态绑定（关于动态绑定<a href="https://en.wikipedia.org/wiki/Dynamic_dispatch">dynamic dispatch</a>），这种间接的调用方式增加了语言的表现力但也会增加一定的运行时开销，在性能敏感的代码中这种开销是不可接受的。本文为大家展示使用final和private关键字以及全局模块优化（Whole Module Optimization）三种方式来减少动态绑定提高性能。</p>
+
+
+		
+		<a href="/blog/2016/04/24/increasing-performance-by-reducing-dynamic-dispatch/" class="more-link">Read on &rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -265,46 +303,6 @@
 
 		
 		<a href="/blog/2014/08/25/fang-qq5-dot-0androidban-zai-suo-ping-zhuo-mian-xian-shi-xiao-xi-kuang/" class="more-link">Read on &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-08T20:15:00+08:00" data-updated="true" itemprop="datePublished">Aug 8<span>th</span>, 2014</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/linearlayout/'>LinearLayout,</a>, <a class='category' href='/blog/categories/android/'>android,</a>, <a class='category' href='/blog/categories/tag/'>tag</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2014/08/08/androizi-ding-yi-viewzhan-shi-biao-qian/" itemprop="url">Android自定义View展示标签</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>项目中需要展示一组标签，但没有合适的View组件。于是自定义了一个TagView继承于LinearLayout实现该功能。
-效果如图：<br><br>
-<img src="https://raw.githubusercontent.com/cloay/CTagView/master/tag.png" width="360" height="640"/></p>
-
-<p>CTagView的实现如下：<br></p>
-
-
-		
-		<a href="/blog/2014/08/08/androizi-ding-yi-viewzhan-shi-biao-qian/" class="more-link">Read on &rarr;</a>
 	</div>
 
 </article>
