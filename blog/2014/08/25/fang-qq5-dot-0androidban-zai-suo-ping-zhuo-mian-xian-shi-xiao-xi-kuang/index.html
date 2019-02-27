@@ -1,0 +1,290 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>仿QQ5.0Android版 在锁屏桌面显示消息框 - 尚卫民的博客</title>
+	<meta name="author" content="Weimin">
+
+	
+	<meta name="description" content="仿QQ5.0Android版 在锁屏桌面显示消息框 QQ5.0 for Android发布一段时间了，UI交互大调整，感受了一下很不习惯。不过新增了一个很赞的功能，当手机处于锁屏状态是有新消息提示时会在桌面显示一个消息框，并且可以直接回复信息，真的很方便。于是试着自己实现该功能。仔细想了想， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="尚卫民的博客" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://cloay.com/blog/2014/08/25/fang-qq5-dot-0androidban-zai-suo-ping-zhuo-mian-xian-shi-xiao-xi-kuang/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45666042-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	<img src="http://tp2.sinaimg.cn/1908981065/180/5753928464/1" alt="Profile Picture" style="width: 160px;" />
+        <!--
+	
+	<script src="/javascripts/md5.js">
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://tp2.sinaimg.cn/1908981065/180/5753928464/1' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	-->
+</div>
+<hgroup>
+  <h1><a href="/">尚卫民的博客</a></h1>
+  
+    <h2>Passion,interest it's not the same thing.</h2>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    热爱编程专注于iOS，Android，目前工作在北京。
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:shangrody@gmail.com" title="Email">Email</a>
+		
+		
+                        <a class="weibo" href="http://weibo.com/cloay" title="weibo">Weibo</a>
+                
+		
+		
+		
+		
+			<a class="github" href="https://github.com/cloay" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">仿QQ5.0Android版 在锁屏桌面显示消息框</h1>
+	<div class="entry-content" itemprop="articleBody"><p>QQ5.0 for Android发布一段时间了，UI交互大调整，感受了一下很不习惯。不过新增了一个很赞的功能，当手机处于锁屏状态是有新消息提示时会在桌面显示一个消息框，并且可以直接回复信息，真的很方便。于是试着自己实现该功能。仔细想了想，大致思路如下：</p>
+
+
+<!-- more -->
+
+
+<p>后台service监听消息，当消息到达时，判断当前手机是否处于锁屏状态。如果是则在桌面显示消息框。关键点是如何在锁屏桌面显示消息框。我们仔细观察不难发现，QQ并没有直接在桌面显示消息框，而是极有可能替换了锁屏界面。试着尝试了一下基本实现了该功能。新建一个Theme为Wallpaper的Activity，并将布局定义成对话框样式。在onCreate(Bundle savedInstanceState)方法中加入如下代码：</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">Window</span> <span class="n">window</span> <span class="o">=</span> <span class="n">getWindow</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">window</span><span class="o">.</span><span class="na">addFlags</span><span class="o">(</span><span class="n">WindowManager</span><span class="o">.</span><span class="na">LayoutParams</span><span class="o">.</span><span class="na">FLAG_SHOW_WHEN_LOCKED</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">window</span><span class="o">.</span><span class="na">addFlags</span><span class="o">(</span><span class="n">WindowManager</span><span class="o">.</span><span class="na">LayoutParams</span><span class="o">.</span><span class="na">FLAG_TURN_SCREEN_ON</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">window</span><span class="o">.</span><span class="na">addFlags</span><span class="o">(</span><span class="n">WindowManager</span><span class="o">.</span><span class="na">LayoutParams</span><span class="o">.</span><span class="na">FLAG_DISMISS_KEYGUARD</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">alert_layout</span><span class="o">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">titleTextV</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">msg_title_textV</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">titleTextV</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;New message: &quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">msgTextV</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">msg_content_textV</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">msgTextV</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Hi, I am cloay!&quot;</span><span class="o">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">cancleBtn</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">alert_cancle_btn</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">cancleBtn</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">okBtn</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">alert_ok_btn</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">okBtn</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当消息到达时，弹出对话框。对话框有取消和确定两个按钮，取消按钮点击返回锁屏界面，点击确定按钮进入应用。锁屏需要获取相应权限，新建一个MyAdminReceiver并在清单文件中加入如下代码：</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;receiver</span> <span class="na">android:name=</span><span class="s">&quot;com.cloay.alertnotifidemo.MyAdminReceiver&quot;</span> <span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta-data</span> <span class="na">android:name=</span><span class="s">&quot;android.app.device_admin&quot;</span>
+</span><span class='line'>            <span class="na">android:resource=</span><span class="s">&quot;@xml/my_admin_receiver&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;intent-filter</span> <span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&quot;android.app.action.DEVICE_ADMIN_ENABLED&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/intent-filter&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/receiver&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在MainActivity获取权限：</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DevicePolicyManager</span> <span class="n">policyManager</span> <span class="o">=</span> <span class="o">(</span><span class="n">DevicePolicyManager</span><span class="o">)</span> <span class="n">getSystemService</span><span class="o">(</span><span class="n">DEVICE_POLICY_SERVICE</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ComponentName</span> <span class="n">componentName</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ComponentName</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">MyAdminReceiver</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kt">boolean</span> <span class="n">isAdminActive</span> <span class="o">=</span> <span class="n">policyManager</span><span class="o">.</span><span class="na">isAdminActive</span><span class="o">(</span><span class="n">componentName</span><span class="o">);</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(!</span><span class="n">isAdminActive</span><span class="o">){</span>
+</span><span class='line'>      <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">DevicePolicyManager</span><span class="o">.</span><span class="na">ACTION_ADD_DEVICE_ADMIN</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">DevicePolicyManager</span><span class="o">.</span><span class="na">EXTRA_DEVICE_ADMIN</span><span class="o">,</span> <span class="n">componentName</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当点击了取消按钮后,就可以锁屏了，锁屏之后再让对话框消失</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">DevicePolicyManager</span> <span class="n">policyManager</span> <span class="o">=</span> <span class="o">(</span><span class="n">DevicePolicyManager</span><span class="o">)</span> <span class="n">getSystemService</span><span class="o">(</span><span class="n">DEVICE_POLICY_SERVICE</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">policyManager</span><span class="o">.</span><span class="na">lockNow</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">Handler</span><span class="o">().</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          
+</span><span class='line'>          <span class="nd">@Override</span>
+</span><span class='line'>          <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">finish</span><span class="o">();</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">},</span> <span class="mi">1000</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>大致就是这些，实现在锁屏桌面显示消息框。效果如下：</p>
+
+
+<p><img src="https://raw.githubusercontent.com/cloay/AlertNotifiDemo/master/pic.jpg"/><br>
+<a href="https://github.com/cloay/AlertNotifiDemo">完整代码已上传github</a><br></p>
+
+<p>项目中使用Service模仿每隔10秒收到新消息。</p>
+
+
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2018 - Weimin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>

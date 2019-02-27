@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: library,runtime,inject | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/library-runtime-inject/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2018-07-21T11:09:03+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[iOS动态库注入实践-伪造微信定位]]></title>
+    <link href="http://cloay.com/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei/"/>
+    <updated>2017-02-27T18:29:00+08:00</updated>
+    <id>http://cloay.com/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei</id>
+    <content type="html"><![CDATA[<p>原理：创建一个动态库利用oc的runtime特性替换定位相关回调方法伪造GPS坐标，然后将动态库注入微信。</p>
+
+<h2>伪造GPS坐标</h2>
+
+<p>原理图：</p>
+
+<p><img src="http://cloay.com/images/fake.jpg" alt="fake" /></p>
+
+<p>替换CLLocationManager的setDelegate:方法，将CLLocationManager的delegate替换为我们自定义的WMLocationProxy代理类，WMLocationProxy持有真正的CLLocationManager的delegate。</p>
+
+<p>```objective-c
+&ndash; (void)wm_setDelegate:(id)delegate {</p>
+
+<pre><code>WMLocationProxy *proxy = [[WMLocationProxy alloc] init];
+proxy.oLMDelegate = delegate;
+self.proxy = proxy;
+[self wm_setDelegate:proxy];
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<!-- more -->
+
+
+<p>在WMLocationProxy中转发CLLocationManagerDelegate的方法时先替换位置坐标，然后再转发给CLLocationManagerDelegate。</p>
+
+<p>```objective-c
+&ndash; (void)forwardInvocation:(NSInvocation *)anInvocation {</p>
+
+<pre><code>if (self.oLMDelegate &amp;&amp; [self.oLMDelegate respondsToSelector:anInvocation.selector]) {
+    if (anInvocation.selector == @selector(locationManager:didUpdateToLocation:fromLocation:)) {
+
+        CLLocation *originLocation;
+        [anInvocation getArgument:&amp;originLocation atIndex:3];
+
+        CLLocation *newLocation = [self makeFakeLocationWithOriginLocation:originLocation];
+        [anInvocation setArgument:&amp;newLocation atIndex:3];
+    }
+
+    if (anInvocation.selector == @selector(locationManager:didUpdateLocations:)) {
+        __unsafe_unretained NSArray *locations;
+        [anInvocation getArgument:&amp;locations atIndex:3];
+        if (locations.count &gt; 0) {
+            CLLocation *originLocation = locations[0];
+            CLLocation *fakeLocation = [self makeFakeLocationWithOriginLocation:originLocation];
+            NSArray *fakeLocations = @[fakeLocation];
+            self.orginLocations = fakeLocations;
+            [anInvocation setArgument:&amp;fakeLocations atIndex:3];
+        }
+    }
+    [anInvocation invokeWithTarget:self.oLMDelegate];
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>动态库（Dynamic library）注入</h2>
+
+<p>iOS8发布之后Xcode允许创建动态库，我们可以创建一个动态库和原ipa文件合并重新打包ipa。具体参考<a href="https://github.com/depoon/iOSDylibInjectionDemo">iOSDylibInjectionDemo</a></p>
+
+<p>stackoverflow关于动态库的问题可以看看</p>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15331056/library-static-dynamic-or-framework-project-inside-another-project">Library? Static? Dynamic? Or Framework? Project inside another project</a></li>
+<li><a href="https://stackoverflow.com/questions/4733847/can-you-build-dynamic-libraries-for-ios-and-load-them-at-runtime">Can you build dynamic libraries for iOS and load them at runtime?</a></li>
+</ul>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,305 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Swift隐式可选类型的前世今生 - 尚卫民的博客</title>
+	<meta name="author" content="Weimin">
+
+	
+	<meta name="description" content="Swift隐式可选类型的前世今生 Swift隐式可选类型的前世今生 一、什么是隐式可选类型 在介绍隐式可选类型之前，我们先看看什么可选类型。在Swift中可选类型用来处理值可能不存在的情况，可选类型的意思是值可能有，也可能没有。我们看一个例子： 1
+2
+3
+let possibleNumber &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="尚卫民的博客" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://cloay.com/blog/2018/07/18/swiftyin-shi-ke-xuan-lei-xing-de-qian-shi-jin-sheng/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45666042-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	<img src="http://tp2.sinaimg.cn/1908981065/180/5753928464/1" alt="Profile Picture" style="width: 160px;" />
+        <!--
+	
+	<script src="/javascripts/md5.js">
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://tp2.sinaimg.cn/1908981065/180/5753928464/1' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	-->
+</div>
+<hgroup>
+  <h1><a href="/">尚卫民的博客</a></h1>
+  
+    <h2>Passion,interest it's not the same thing.</h2>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    热爱编程专注于iOS，Android，目前工作在北京。
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:shangrody@gmail.com" title="Email">Email</a>
+		
+		
+                        <a class="weibo" href="http://weibo.com/cloay" title="weibo">Weibo</a>
+                
+		
+		
+		
+		
+			<a class="github" href="https://github.com/cloay" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">Swift隐式可选类型的前世今生</h1>
+	<div class="entry-content" itemprop="articleBody"><h3>Swift隐式可选类型的前世今生</h3>
+
+<h4>一、什么是隐式可选类型</h4>
+
+<p>在介绍隐式可选类型之前，我们先看看什么可选类型。在Swift中可选类型用来处理值可能不存在的情况，可选类型的意思是值可能有，也可能没有。我们看一个例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">let</span> <span class="n">possibleNumber</span> <span class="o">=</span> <span class="s">&quot;123&quot;</span>
+</span><span class='line'><span class="n">let</span> <span class="n">convertedNumber</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="n">possibleNumber</span><span class="p">)</span>
+</span><span class='line'><span class="c1">// convertedNumber 被推测为类型 &quot;Int?&quot;， 或者类型 &quot;optional Int&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为Int使用字符串的构造方法，可能成功也可能失败。比如字符串“Hello, world”就不能转换成Int。所以convertedNumber就是一个可选类型。当我们定义变量或常量时如果有值不存在的情况，使用可选类型。</p>
+
+<!-- more -->
+
+
+<p>  <br/>
+那么什么是隐式可选类型呢？隐式可选类型是可选类型的一种，有时候在程序架构中，第一次被赋值之后，可以确定一个可选类型总会有值。在这种情况下，每次都要判断和解析可选值是非常低效的，因为可以确定它总会有值。这种类型的可选状态被定义为隐式解析可选类型（implicitly unwrapped optionals）。使用！进行声明：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">let</span> <span class="nl">assumedString:</span> <span class="n">String</span><span class="o">!</span> <span class="o">=</span> <span class="s">&quot;An implicitly unwrapped optional string.&quot;</span>
+</span><span class='line'><span class="n">let</span> <span class="nl">implicitString:</span> <span class="n">String</span> <span class="o">=</span> <span class="n">assumedString</span>  <span class="c1">// 不需要感叹号</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+隐式可选类型可以理解为一个可以自动解析的可选类型，因为它总是有值，不用使用！进行强制解包。</p>
+
+<h4>二、可选类型底层实现</h4>
+
+<p>我们先看看Swift源码中可选类型的定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">public</span> <span class="k">enum</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Wrapped</span><span class="o">&gt;</span> <span class="o">:</span> <span class="n">ExpressibleByNilLiteral</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">none</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">some</span><span class="p">(</span><span class="n">Wrapped</span><span class="p">)</span>
+</span><span class='line'>    <span class="c1">/// Construct a non-\ `nil` instance that stores `some`.</span>
+</span><span class='line'>    <span class="n">init</span><span class="p">(</span><span class="n">_</span> <span class="nl">some:</span> <span class="n">Wrapped</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可选类型被定义为枚举类型，因为Swift中枚举可以关联值，枚举类型可以明确的表示有值或者无值的情况。
+我们再看看隐式可选类型的定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">public</span> <span class="k">enum</span> <span class="n">ImplicitlyUnwrappedOptional</span><span class="o">&lt;</span><span class="n">Wrapped</span><span class="o">&gt;</span> <span class="o">:</span> <span class="n">ExpressibleByNilLiteral</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">none</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">some</span><span class="p">(</span><span class="n">Wrapped</span><span class="p">)</span>
+</span><span class='line'>    <span class="c1">/// Construct a non-\ `nil` instance that stores `some`.</span>
+</span><span class='line'>    <span class="n">public</span> <span class="n">init</span><span class="p">(</span><span class="n">_</span> <span class="nl">some:</span> <span class="n">Wrapped</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">/// Construct an instance from an explicitly unwrapped optional</span>
+</span><span class='line'>    <span class="c1">/// (`T?`).</span>
+</span><span class='line'>    <span class="n">public</span> <span class="n">init</span><span class="p">(</span><span class="nl">nilLiteral:</span> <span class="p">())</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>虽然隐式可选类型可以当做一种有值的可选类型，但他们却被定义成了两种类型，没有继承关系。我们可以看到两者定义本身没有区别，因为隐式可选类型除了表示有值情况的可选类型，也可以当做正常的可选类型来使用。</p>
+
+<h4>三、隐式可选类型的使用</h4>
+
+<p>什么情况下使用隐式可选类型呢？
+1、在声明时无法初始化的常量定义为隐式可选类型，例如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">class</span> <span class="nl">MyView:</span> <span class="n">UIView</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">var</span> <span class="nl">startingOrigin:</span> <span class="n">CGPoint</span><span class="o">!</span>
+</span><span class='line'>    <span class="n">override</span> <span class="n">func</span> <span class="n">awakeFromNib</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">super</span><span class="p">.</span><span class="n">awakeFromNib</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">startingOrigin</span> <span class="o">=</span> <span class="n">frame</span><span class="p">.</span><span class="n">origin</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2、使用IB声明的属性</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">class</span> <span class="nl">MyView:</span> <span class="n">UIView</span> <span class="p">{</span>
+</span><span class='line'>    <span class="err">@</span><span class="kt">IBOutlet</span> <span class="n">private</span> <span class="n">weak</span> <span class="n">var</span> <span class="nl">titleLabel:</span> <span class="n">UILabel</span><span class="o">!</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">override</span> <span class="n">func</span> <span class="n">layoutSubviews</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">super</span><span class="p">.</span><span class="n">layoutSubviews</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">titleLabel</span><span class="p">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Hello, world&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>总之，在使用隐式可选变量时保证它一定有值。</p>
+
+<h4>四、隐式可选类型的今生</h4>
+
+<p>上面说的是隐式可选类型的前世，而在Swift4.2之后，Swift开发组重新实现可选类型的隐式解包。为什么要这么做，官方博客上说，“消除了类型检测中的一些矛盾，并且阐明了处理这些值的规则，使语义保持一致且易于推理。”具体可以参考<a href="https://github.com/apple/swift-evolution/blob/master/proposals/0054-abolish-iuo.md#motivation">：动机</a>
+重新实现之后，在使用隐式可选包时编译器不会再自动的解析，需要我们手动进行强制解析，即加上！。</p>
+
+<p>在新的实现上，隐式可选类型和可选类型是同一种类型，类型检测的一致性将会更好，编译器的特殊情况也会更少。删除这些特殊情况会减少处理声明时的错误数量。总之，尽量不要使用隐式可选类型，改用 if let 和 guard let 来显式解包。如果确定有值，就用 ! 来显式强制解包。</p>
+
+<h4>参考链接</h4>
+
+<ul>
+<li><a href="https://docs.swift.org/swift-book/LanguageGuide/TheBasics.html">The swift programming language</a></li>
+<li><a href="https://drewag.me/posts/2014/07/05/uses-for-implicitly-unwrapped-optionals-in-swift">Uses for Implicitly Unwrapped Optionals in Swift</a></li>
+<li><a href="https://swift.org/blog/iuo/">Reimplementation of Implicitly Unwrapped Optionals</a></li>
+</ul>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2018 - Weimin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>
