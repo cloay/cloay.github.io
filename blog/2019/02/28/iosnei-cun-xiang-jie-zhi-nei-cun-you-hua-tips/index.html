@@ -124,13 +124,23 @@
 <!-- more -->
 
 
+<br><br>
+
+
 <h3>一、常见内存问题</h3>
 
-<p>不正确的内存使用导致两种常见的问题：
-&ndash; <strong>释放或覆盖仍在使用的数据导致内存损坏即野指针，通常会导致应用程序崩溃，甚至导致用户数据损坏。</strong>
-&ndash; <strong>不释放不再使用的数据导致内存泄漏。泄漏会导致应用程序使用不断增加的内存量，从而导致系统性能下降或应用程序被终止。</strong></p>
+<p>不正确的内存使用导致两种常见的问题：</p>
+
+<ul>
+<li><p><strong>释放或覆盖仍在使用的数据导致内存损坏即野指针，通常会导致应用程序崩溃，甚至导致用户数据损坏。</strong></p></li>
+<li><p><strong>不释放不再使用的数据导致内存泄漏。泄漏会导致应用程序使用不断增加的内存量，从而导致系统性能下降或应用程序被终止。</strong></p></li>
+</ul>
+
 
 <p>野指针问题是没有掌握好对象的生命周期，对象被提前释放了。后期再访问就出现了野指针问题。第二类问题对象不需要的时候未能及时释放，占用内存空间，造成了内存的浪费。这两种问题是使用内存中最为常见的问题。接下来我们会详细介绍分析产生的原因以及如何解决。</p>
+
+<br><br>
+
 
 <h3>二、常见内存优化tips</h3>
 
@@ -235,9 +245,15 @@
 </ul>
 
 
+<br><br>
+
+
 <h3>三、总结</h3>
 
 <p>这篇是内存详解系列最后一篇，回顾整个系列详细介绍了内存的相关概念、底层内存原理，iOS系统下对象内存的分配及管理原理，如何使用instruments分析APP内存、查找内存泄漏以及iOS内存优化问题。希望通过本系列大家能对内存有一个更全面的理解，在后续的APP开发中，能够高效的使用内存，进而优化APP的性能。</p>
+
+<br><br>
+
 
 <h3>参考链接</h3>
 
@@ -245,6 +261,9 @@
 <li><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011-SW1">Advanced Memory Management Programming Guide</a></li>
 <li><a href="https://developer.apple.com/library/archive/documentation/Performance/Conceptual/PerformanceOverview/BasicTips/BasicTips.html">PerformanceOverview</a></li>
 </ul>
+
+
+<br><br>
 
 </div>
 
