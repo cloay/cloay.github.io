@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ios,memory,tips | 尚卫民的博客]]></title>
+  <link href="http://cloay.com/blog/categories/ios-memory-tips/atom.xml" rel="self"/>
+  <link href="http://cloay.com/"/>
+  <updated>2019-02-28T17:13:22+08:00</updated>
+  <id>http://cloay.com/</id>
+  <author>
+    <name><![CDATA[Weimin]]></name>
+    <email><![CDATA[shangrody@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[iOS内存详解之内存优化Tips]]></title>
+    <link href="http://cloay.com/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-nei-cun-you-hua-tips/"/>
+    <updated>2019-02-28T23:45:00+08:00</updated>
+    <id>http://cloay.com/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-nei-cun-you-hua-tips</id>
+    <content type="html"><![CDATA[<p>内存是所有程序使用的重要系统资源。程序必须先加载到内存中才能运行，并且在运行时，它们会分配额外的内存（显式和隐式）来存储和操作程序数据。为程序的代码和数据腾出内存空间需要时间和资源，因此会影响系统的整体性能。虽然我们无法完全避免使用内存，但有一些方法可以最大限度地减少内存使用对系统其余部分的影响。</p>
+
+<!-- more -->
+
+
+<h3>一、常见内存问题</h3>
+
+<p>不正确的内存使用导致两种常见的问题：
+&ndash; <strong>释放或覆盖仍在使用的数据导致内存损坏即野指针，通常会导致应用程序崩溃，甚至导致用户数据损坏。</strong>
+&ndash; <strong>不释放不再使用的数据导致内存泄漏。泄漏会导致应用程序使用不断增加的内存量，从而导致系统性能下降或应用程序被终止。</strong></p>
+
+<p>野指针问题是没有掌握好对象的生命周期，对象被提前释放了。后期再访问就出现了野指针问题。第二类问题对象不需要的时候未能及时释放，占用内存空间，造成了内存的浪费。这两种问题是使用内存中最为常见的问题。接下来我们会详细介绍分析产生的原因以及如何解决。</p>
+
+<h3>二、常见内存优化tips</h3>
+
+<p>优化内存的目的主要是为了减少内存使用，解决内存使用过程中产生的野指针和内存泄漏问题，高效的使用内存。常见的内存优化方法有：</p>
+
+<p><strong>1、避免内存泄漏</strong></p>
+
+<p>内存泄漏是指对象在使用过后没有及时释放，在之前我们介绍过变量的生命周期以及iOS内存的引用计数管理模式，结合我们程序的逻辑，应该不难确认对象什么时候应该被释放。我们可以使用Instruments分析内存泄漏或者在关键代码节点打印日志重写dealloc方法来检查内存泄漏问题。其根本原因是对象引用计数不为0。</p>
+
+<p>常见的内存泄漏场景<strong>一是循环引用问题，二是单例及系统类NSTimer、NSNotificationCenter引起的强持有问题</strong></p>
+
+<p><strong>a、循环引用</strong></p>
+
+<p>循环引用常见情景有：
+&ndash; delegate模式
+&ndash; block引起的
+&ndash; 父子对象</p>
+
+<p>循环引用大家都很熟悉了，这里不再详细介绍产生的原因。使用Weak关键字打破循环即可。</p>
+
+<p><strong>b、单例及系统对象NSTimer、NSNotificationCenter引起的强持有问题</strong></p>
+
+<p>先说单例，单例的生命周期往往随着程序的生命周期，<strong>也就是单例一旦生成就不会释放直到程序退出，所以对于单例持有的对象也就不被释放。</strong></p>
+
+<p>看看下面的代码加深一下理解：</p>
+
+<p>``` objective-c
+typedef void(^WMModelBlock)(void);</p>
+
+<p>@interface WMModel : NSObject
+@property (nonatomic, strong) NSString <em>name;
+@property (nonatomic, copy) WMModelBlock block;
+@property (nonatomic, strong) UIViewController </em>mVc;
++ (instancetype)sharedInstance;
+@end</p>
+
+<p>WMModel *sharedInstance = [WMModel sharedInstance];
+sharedInstance.mVc = self;
+sharedInstance.name = @&ldquo;单例&rdquo;;
+sharedInstance.block = ^{</p>
+
+<pre><code>NSLog(@"for test %@", [self class]);
+</code></pre>
+
+<p>};
+```
+WMModel类中定义了实例变量mVc，在ViewController中如果我们对单例进行赋值，当ViewController退出单例不会被销毁。ViewController也不会被销毁，因为他被单例强引用，解决起来也很简单。使用weak关键字声明即可。</p>
+
+<p>还有一种情况，参见WMModel类的定义。在WMModel中定义了一个block，同样在ViewController中我们对单例的block赋值，因为block会捕获上下文的变量特性，单例间接持有self（ViewController），当ViewController退出时，同样不能被释放。同样的我们使用“万能的weak”来解决。</p>
+
+<p>对于NSTimer我们需要注意的时，在合适的时机调用Timer的invalidate方法即可。查看Timer文档我们可以看到在Timer初始化的时候会持有（强引用）target或者user info objects。调用invalidate方法会自动解除这种强引用关系，在invalidate方法的注释中有相关说明：</p>
+
+<p><img src="/images/memory/5/1invalidate.png" alt="1invalidate" /></p>
+
+<p>对于通知中心NSNotificationCenter，同样会持有Observer即观察者。在iOS9.0以前的版本中观察者被释放之前需要手动从通知中心移除观察者，9.0及以后的版本中不需要。苹果官方文档也有说明：</p>
+
+<p><img src="/images/memory/5/2notification.png" alt="2notification" /></p>
+
+<p><strong>2、避免野指针问题</strong></p>
+
+<p>野指针问题非常严重，会造成程序的崩溃。及时发现野指针问题非常重要，可以减少应用的崩溃率。打开Xcode野指针调试选项可快速定位问题，如图：</p>
+
+<p><img src="/images/memory/5/3zombie.png" alt="3zombie" /></p>
+
+<p>野指针根本原因是对象提前被释放了，根据iOS内存引用计数管理原理，适时对对象增加引用即可。</p>
+
+<p><strong>3、延迟内存分配-懒加载</strong></p>
+
+<p>提高性能的一种非常简单的方法是确保应用程序不执行任何不必要的工作。应用程序的每个时刻都应该用于响应用户的当前请求，而不是预测将来的请求。如果不需要立即使用某对象或者可能用不到，就可以延迟分配它，减少内存使用。</p>
+
+<p><strong>懒加载的基本规则是只有当应用程序需要必要的资源来完成请求某些内容时，才去加载这些资源。</strong> 开发者应该仅在具有可衡量的性能优势的情况下缓存数据到内存。假设应用程序的其余部分运行得更快，预加载缓存数据到内存实际上会降低低内存的性能。在低内存的情况下，缓存的内存数据在可以使用之前会被分页到磁盘。因此，通过缓存数据获得的任何节省都会变成一种性能损失，因为在低内存的情况下，缓存在使用之前必须读取两次磁盘，一次从磁盘读取数据到内存，因为低内存又被分页到磁盘，在真正使用时还是从磁盘读取。</p>
+
+<p>除了延迟对对象分配内存懒加载模式也适用以下情况：
+&ndash; 让系统有机会以懒加载地模式加载代码并组织代码，以便系统仅加载当前操作所需的代码。
+&ndash; 推迟文件的读取直到确实需要为止。</p>
+
+<p><strong>4、AutoReleasePool及时释放局部大量创建的对象</strong></p>
+
+<p>自动释放池块提供了一种机制，开发者可以放弃对象的所有权，但避免立即释放它（例如从方法返回对象时）。通常我们不需要创建自己的自动释放池块。但在某些情况下，我们主动使用自动释放池可以及时释放内存。</p>
+
+<p>Cocoa框架希望代码总是在自动释放池块中执行，否则自动释放的对象不会被释放而发生内存泄漏。AppKit和UIKit框架处理自动释放池块中的每个事件循环迭代（例如鼠标按下事件或点击）。因此，通常不必自己创建自动释放池块，甚至不必查看用于创建的代码。但是有三种情况可能会需要我们主动使用自动释放池块：</p>
+
+<ul>
+<li>如果编写不是基于UI框架的程序，例如命令行工具。</li>
+<li>如果编写一个创建许多临时对象的循环。可以在循环内使用自动释放池块在下一次迭代之前处理这些对象。在循环中使用自动释放池块有助于减少应用程序的最大内存占用量。</li>
+<li>如果产生一个辅助线程。一旦线程开始执行，开发者必须为线程创建自己的自动释放池块;否则应用程序将产生内存泄漏。</li>
+</ul>
+
+
+<h3>三、总结</h3>
+
+<p>这篇是内存详解系列最后一篇，回顾整个系列详细介绍了内存的相关概念、底层内存原理，iOS系统下对象内存的分配及管理原理，如何使用instruments分析APP内存、查找内存泄漏以及iOS内存优化问题。希望通过本系列大家能对内存有一个更全面的理解，在后续的APP开发中，能够高效的使用内存，进而优化APP的性能。</p>
+
+<h3>参考链接</h3>
+
+<ul>
+<li><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011-SW1">Advanced Memory Management Programming Guide</a></li>
+<li><a href="https://developer.apple.com/library/archive/documentation/Performance/Conceptual/PerformanceOverview/BasicTips/BasicTips.html">PerformanceOverview</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

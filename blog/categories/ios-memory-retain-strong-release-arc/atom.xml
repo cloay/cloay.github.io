@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ios,memory,retain,strong,release,arc | 尚卫民的博客]]></title>
   <link href="http://cloay.com/blog/categories/ios-memory-retain-strong-release-arc/atom.xml" rel="self"/>
   <link href="http://cloay.com/"/>
-  <updated>2019-02-28T16:26:45+08:00</updated>
+  <updated>2019-02-28T17:13:22+08:00</updated>
   <id>http://cloay.com/</id>
   <author>
     <name><![CDATA[Weimin]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[iOS内存详解之内存管理]]></title>
     <link href="http://cloay.com/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-nei-cun-guan-li/"/>
-    <updated>2019-02-28T23:45:00+08:00</updated>
+    <updated>2019-02-28T23:25:00+08:00</updated>
     <id>http://cloay.com/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-nei-cun-guan-li</id>
     <content type="html"><![CDATA[<p>在了解了iOS了对象创建模式之后，接下来我们看看iOS的内存管理。通过理解其内部的原理来高效的使用内存、优化程序中的代码问题。在对iOS内存管理原理深入了解之前，我们先复习一下变量的生命周期和作用域，以及变量在内存中的分布。然后来看iOS是怎么对内存管理的以及怎么影响变量的生成和销毁的。</p>
 

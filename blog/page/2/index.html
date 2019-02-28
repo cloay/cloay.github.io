@@ -9,7 +9,7 @@
 	<meta name="author" content="Weimin">
 
 	
-	<meta name="description" content="Jul 20th, 2016 iOS,UIWebView,https,WKWebView WebView Loading Https Content iOS使用Webview加载https网页 项目新的需求需要在客户端中嵌入网页，以前的项目中也做过类似的功能，感觉不会有什么困难， &hellip;">
+	<meta name="description" content="Jul 18th, 2018 Optionals, Swift,iOS,Optional,Implicitly, Unwrapped Swift隐式可选类型的前世今生 Swift隐式可选类型的前世今生 一、什么是隐式可选类型 在介绍隐式可选类型之前，我们先看看什么可选类型。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -135,6 +135,116 @@
   
 
 
+<time datetime="2018-07-18T10:40:00+08:00" data-updated="true" itemprop="datePublished">Jul 18<span>th</span>, 2018</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/optionals/'>Optionals</a>, <a class='category' href='/blog/categories/swift-ios-optional-implicitly/'>Swift,iOS,Optional,Implicitly</a>, <a class='category' href='/blog/categories/unwrapped/'>Unwrapped</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2018/07/18/swiftyin-shi-ke-xuan-lei-xing-de-qian-shi-jin-sheng/" itemprop="url">Swift隐式可选类型的前世今生</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>Swift隐式可选类型的前世今生</h3>
+
+<h4>一、什么是隐式可选类型</h4>
+
+<p>在介绍隐式可选类型之前，我们先看看什么可选类型。在Swift中可选类型用来处理值可能不存在的情况，可选类型的意思是值可能有，也可能没有。我们看一个例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">let</span> <span class="n">possibleNumber</span> <span class="o">=</span> <span class="s">&quot;123&quot;</span>
+</span><span class='line'><span class="n">let</span> <span class="n">convertedNumber</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="n">possibleNumber</span><span class="p">)</span>
+</span><span class='line'><span class="c1">// convertedNumber 被推测为类型 &quot;Int?&quot;， 或者类型 &quot;optional Int&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为Int使用字符串的构造方法，可能成功也可能失败。比如字符串“Hello, world”就不能转换成Int。所以convertedNumber就是一个可选类型。当我们定义变量或常量时如果有值不存在的情况，使用可选类型。</p>
+
+
+		
+		<a href="/blog/2018/07/18/swiftyin-shi-ke-xuan-lei-xing-de-qian-shi-jin-sheng/" class="more-link">Read on &rarr;</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-02-27T18:29:00+08:00" data-updated="true" itemprop="datePublished">Feb 27<span>th</span>, 2017</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/dynamic/'>dynamic</a>, <a class='category' href='/blog/categories/library-runtime-inject/'>library,runtime,inject</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei/" itemprop="url">iOS动态库注入实践-伪造微信定位</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>原理：创建一个动态库利用oc的runtime特性替换定位相关回调方法伪造GPS坐标，然后将动态库注入微信。</p>
+
+<h2>伪造GPS坐标</h2>
+
+<p>原理图：</p>
+
+<p><img src="http://cloay.com/images/fake.jpg" alt="fake" /></p>
+
+<p>替换CLLocationManager的setDelegate:方法，将CLLocationManager的delegate替换为我们自定义的WMLocationProxy代理类，WMLocationProxy持有真正的CLLocationManager的delegate。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">wm_setDelegate:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">delegate</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">WMLocationProxy</span> <span class="o">*</span><span class="n">proxy</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WMLocationProxy</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">proxy</span><span class="p">.</span><span class="n">oLMDelegate</span> <span class="o">=</span> <span class="n">delegate</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">wm_setDelegate:</span><span class="n">proxy</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+		
+		<a href="/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei/" class="more-link">Read on &rarr;</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
 <time datetime="2016-07-20T00:37:00+08:00" data-updated="true" itemprop="datePublished">Jul 20<span>th</span>, 2016</time></div>
 		<div class="tags">
 
@@ -228,82 +338,6 @@
 
 		
 		<a href="/blog/2016/04/23/ti-xing-neng-tan-jiu/" class="more-link">Read on &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-03-26T17:39:00+08:00" data-updated="true" itemprop="datePublished">Mar 26<span>th</span>, 2016</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/nsoperation-nsoperationqueue-duo-xian-cheng-concurrency/'>NSOperation,NSOperationQueue,多线程,Concurrency</a>, <a class='category' href='/blog/categories/programming/'>programming</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/03/26/duo-xian-cheng-shi-xian-zhi-nsoperationhe-nsoperationqueue/" itemprop="url">多线程实现之Operation Queues</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>一、Operation Queues简介</h3>
-
-<p>Cocoa operations 为我们提供了一种面向对象的方式的来封装异步任务。包含Cocoa框架中的NSOperation和NSOperationQueue两个类，Operation通常与OperationQueue相结合来使用，是多线程的一种实现方式。其实现方式一是创建新线程，二是使用GCD的方式实现，相对于GCD可操作性高，是GCD的一种替代方式。</p>
-
-
-		
-		<a href="/blog/2016/03/26/duo-xian-cheng-shi-xian-zhi-nsoperationhe-nsoperationqueue/" class="more-link">Read on &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-03-17T14:50:00+08:00" data-updated="true" itemprop="datePublished">Mar 17<span>th</span>, 2016</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/programming-duo-xian-cheng-bing-fa-bian-cheng/'>Programming,多线程,并发编程</a>, <a class='category' href='/blog/categories/ios-gcd-concurrency/'>iOS,GCD,Concurrency</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/03/17/iosduo-xian-cheng-shi-xian-fang-shi-zhi-gcdxiang-jie/" itemprop="url">iOS多线程实现方式之GCD详解</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>一、什么是GCD</h3>
-
-<p><strong>GCD</strong>是Grand Central Dispatch的缩写， 是Apple提供的一个并发编程实现库，即<a href="https://github.com/apple/swift-corelibs-libdispatch">libdispatch</a>它是使用C语言实现。提供多核硬件（ iOS和OSX ）上执行并发代码的功能。</p>
-
-
-		
-		<a href="/blog/2016/03/17/iosduo-xian-cheng-shi-xian-fang-shi-zhi-gcdxiang-jie/" class="more-link">Read on &rarr;</a>
 	</div>
 
 </article>

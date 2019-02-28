@@ -9,11 +9,28 @@
 	<meta name="author" content="Weimin">
 
 	
-	<meta name="description" content="Jan 20th, 2014 Android,ScaleAnmation,TranslateAnimation 仿网易新闻点击图片放大动画 点击新闻中小图，从图片位置以动画的方式逐渐移动到屏幕中心并放大图片
-具体实现： 1
+	<meta name="description" content="May 15th, 2014 android, pagecontrol Pagecontrolandroid中的实现 Android中没有PageControl控件 自己实现如下： 1
 2
 3
-public static void browerImage( &hellip;">
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -123,6 +140,200 @@ public static void browerImage( &hellip;">
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-15T22:46:00+08:00" data-updated="true" itemprop="datePublished">May 15<span>th</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>android</a>, <a class='category' href='/blog/categories/pagecontrol/'>pagecontrol</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/05/15/pagecontrolandroidzhong-de-shi-xian/" itemprop="url">Pagecontrolandroid中的实现</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>Android中没有PageControl控件 自己实现如下：</p>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PageControl</span> <span class="kd">extends</span> <span class="n">LinearLayout</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">selected</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">nomal_icon_id</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">pagecontro_icon_normal</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">foucsed_icon_id</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">pagecontro_icon_foucsed</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Context</span> <span class="n">context</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">PageControl</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">PageControl</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">AttributeSet</span> <span class="n">attrs</span><span class="o">){</span>
+</span><span class='line'>      <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">attrs</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">generateView</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">PageControl</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">generateView</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">generateView</span><span class="o">(){</span>
+</span><span class='line'>      <span class="n">removeAllViews</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">LayoutParams</span> <span class="n">params</span> <span class="o">=</span>  <span class="k">new</span> <span class="n">LayoutParams</span><span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getDimensionPixelSize</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">dimen</span><span class="o">.</span><span class="na">home_banner_pagecontrol_shape</span><span class="o">),</span>
+</span><span class='line'>              <span class="n">context</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getDimensionPixelSize</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">dimen</span><span class="o">.</span><span class="na">home_banner_pagecontrol_shape</span><span class="o">));</span>
+</span><span class='line'>      <span class="n">params</span><span class="o">.</span><span class="na">setMargins</span><span class="o">(</span><span class="mi">10</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span> <span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+</span><span class='line'>          <span class="n">ImageView</span> <span class="n">indicatorV</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImageView</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">selected</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">indicatorV</span><span class="o">.</span><span class="na">setImageResource</span><span class="o">(</span><span class="n">foucsed_icon_id</span><span class="o">);</span>
+</span><span class='line'>          <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class='line'>              <span class="n">indicatorV</span><span class="o">.</span><span class="na">setImageResource</span><span class="o">(</span><span class="n">nomal_icon_id</span><span class="o">);</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="n">addView</span><span class="o">(</span><span class="n">indicatorV</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCount</span><span class="o">(</span><span class="kt">int</span> <span class="n">count</span><span class="o">){</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">generateView</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setSelected</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">){</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">selected</span> <span class="o">=</span> <span class="n">index</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">generateView</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setIconId</span><span class="o">(</span><span class="kt">int</span> <span class="n">nomalId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">foucsedId</span><span class="o">){</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">nomal_icon_id</span> <span class="o">=</span> <span class="n">nomalId</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">foucsed_icon_id</span> <span class="o">=</span> <span class="n">foucsedId</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>直接在布局中定义就可以使用了。</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T23:24:00+08:00" data-updated="true" itemprop="datePublished">Apr 25<span>th</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/hmac/'>HMAC</a>, <a class='category' href='/blog/categories/md5/'>MD5</a>, <a class='category' href='/blog/categories/sha/'>SHA</a>, <a class='category' href='/blog/categories/java/'>java</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2014/04/25/ji-ben-jia-mi-suan-fa/" itemprop="url">基本加密算法</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h3>基本加密算法-安全散列算法</h3>
+
+
+<br>SHA（Secure Hash Algorithm，SHA)安全散列法<br>
+
+
+<p>SHA-1是一种数据加密算法，该算法的思想是接收一段明文，然后以一种不可逆的方式将它转换成一段（通常更小）密文>，也可以简单的理解为取一串输入码（称为预映射或信息），并把它们转化为长度较短、位数固定的输出序列即散列值（也>称为信息摘要或信息认证代码）的过程。</p>
+
+
+
+		
+		<a href="/blog/2014/04/25/ji-ben-jia-mi-suan-fa/" class="more-link">Read on &rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -257,90 +468,6 @@ public static void browerImage( &hellip;">
 
 		
 		<a href="/blog/2013/11/15/homebrewde-an-zhuang-he-shi-yong/" class="more-link">Read on &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-13T11:15:00+08:00" data-updated="true" itemprop="datePublished">Nov 13<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/branch/'>branch</a>, <a class='category' href='/blog/categories/checkout/'>checkout</a>, <a class='category' href='/blog/categories/git/'>git</a>, <a class='category' href='/blog/categories/remote/'>remote</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/" itemprop="url">Git 拉取远程分支到本地</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<pre><code>    git checkout -b newbranch_name --track origin/feature/newbranch_name
-</code></pre>
-
-<p>如果遇到类似如下问题：</p>
-
-
-<pre><code>    fatal: git checkout: updating paths is incompatible with switching branches.
-    Did you intend to checkout 'origin/remote-name' which can not be resolved as commit?
-</code></pre>
-
-
-		
-		<a href="/blog/2013/11/13/git-la-qu-yuan-cheng-fen-zhi-dao-ben-di/" class="more-link">Read on &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-12T15:01:00+08:00" data-updated="true" itemprop="datePublished">Nov 12<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/afnetworking-asi-ios-iphone-apple/'>afnetworking,asi,ios,iphone,apple</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/" itemprop="url">AFNetworking的简单使用</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>简单登录使用</p>
-
-
-<br>
-
-
-
-		
-		<a href="/blog/2013/11/12/afnetworkingde-jian-dan-shi-yong/" class="more-link">Read on &rarr;</a>
 	</div>
 
 </article>

@@ -1,0 +1,263 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>iOS内存详解之使用Instruments分析内存 - 尚卫民的博客</title>
+	<meta name="author" content="Weimin">
+
+	
+	<meta name="description" content="iOS内存详解之使用Instruments分析内存 Instruments是功能强大且灵活的性能分析和测试工具，是Xcode工具集的一部分。它可以帮助我们分析iOS，watchOS，tvOS和macOS的应用程序，以便更好地了解和优化应用程序的行为和性能。从应用程序开发过程开始， &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="尚卫民的博客" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://cloay.com/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-shi-yong-instrumentsfen-xi-nei-cun/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45666042-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	<img src="http://tp2.sinaimg.cn/1908981065/180/5753928464/1" alt="Profile Picture" style="width: 160px;" />
+        <!--
+	
+	<script src="/javascripts/md5.js">
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://tp2.sinaimg.cn/1908981065/180/5753928464/1' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	-->
+</div>
+<hgroup>
+  <h1><a href="/">尚卫民的博客</a></h1>
+  
+    <h2>Passion,interest it's not the same thing.</h2>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    热爱编程专注于iOS，Android，目前工作在北京。
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:shangrody@gmail.com" title="Email">Email</a>
+		
+		
+                        <a class="weibo" href="http://weibo.com/cloay" title="weibo">Weibo</a>
+                
+		
+		
+		
+		
+			<a class="github" href="https://github.com/cloay" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS内存详解之使用Instruments分析内存</h1>
+	<div class="entry-content" itemprop="articleBody"><p>Instruments是功能强大且灵活的性能分析和测试工具，是Xcode工具集的一部分。它可以帮助我们分析iOS，watchOS，tvOS和macOS的应用程序，以便更好地了解和优化应用程序的行为和性能。从应用程序开发过程开始，将Instruments集成到的日常工作流程中，可以帮助我们在开发周期的早期发现问题进行优化解决，从而节省更多的时间。</p>
+
+<!-- more -->
+
+
+<p>在Instruments中使用分析模板来分析应用程序。分析模板是一个跟踪文档，该文档已预先配置了用于执行常见类型跟踪的设置。当启动Instruments，创建新文档或从Xcode启动跟踪时，可以使用分析模板。如果有更高级或自定义的需求，也可以创建自己的模板。
+<img src="/images/memory/4/0.png" alt="内存追踪" /></p>
+
+<p>我们主要介绍Allocations模板和Leaks模板，用来查看内存使用情况和寻找内存泄漏。</p>
+
+<h3>一、查看APP内存使用情况</h3>
+
+<p>Allocations概要分析模板使用Allocations和VM Tracker工具来测量应用程序中的常规和虚拟内存使用情况。大概操作步骤如下：</p>
+
+<ol>
+<li>启动仪器。</li>
+<li>在显示的性能分析模板选择对话框中，单击“Allocations.”模板。 如上图</li>
+<li>从目标设备和进程列表中选择您的设备和应用程序。</li>
+<li>单击“选择”以创建跟踪文档。</li>
+<li>单击时间线窗格中的“Allocations.”工具。查看内存实时使用情况。</li>
+</ol>
+
+
+<p><img src="/images/memory/4/1.png" alt="应用内存分布" /></p>
+
+<p>在上面的菜单中对应的分别是：Persistent Bytes: 内存占用大小， Persistent:内存中该对象个数，Transient:释放过的对象个数，Total Bytes: 总共占用的内存大小等
+在左下输入框输入关键词可以过滤</p>
+
+<p><img src="/images/memory/4/2.png" alt="过滤内存" /></p>
+
+<ol>
+<li>点击“Mark Generation”按钮显示在详细信息窗格底部的过滤器和配置栏中。</li>
+<li>单击工具栏中的“录制”按钮（或按Command-R）开始录制。</li>
+<li>在您的应用中执行一系列可重复的操作。</li>
+<li>为了准确生成趋势，这应该是一组在相同状态下启动和完成应用程序的操作。</li>
+<li>单击过滤器和配置栏中的“Mark Generation”按钮。</li>
+<li>轨道窗格中将显示一个标志以标识生成。
+<img src="/images/memory/4/3.png" alt="内存泄漏" /></li>
+<li>您标记的世代列表将显示在详细信息窗格中。每一代都包括自上一代以来发生的分配列表。</li>
+<li>通过将轨道窗格的时间轴中的检查头拖动到所需位置并单击标记生成，您还可以在完成录制后标记世代。</li>
+<li>在监视详细信息窗格的同时多次执行步骤8和9，直到您看到内存是否无限制地增长。</li>
+<li>重要说明：在前几次迭代中，由于缓存可能会发生额外的分配。因此，为了建立基线，创建一些初始世代是很重要的。然后，创建其他代以进行真正的分析。从上图中可以看到C、D、E、F、G、H、I等满足</li>
+<li>当您准备好停止录制时，单击工具栏中的“停止”按钮（或再次按Command-R）。</li>
+<li>在详细信息窗格中扫描几代，找到一个似乎代表重复内存增长的代码。</li>
+<li>Growth和＃Persistent列告诉您自上一代以来已经发生了多少额外内存和多少分配。如果您的应用程序在操作后返回其原始状态，您不应期望代代相传。</li>
+<li>单击代的显示三角形，以显示自上一代以来已分配的新对象。</li>
+<li>寻找持久的对象。如果您确定了一个，请单击显示三角形以显示其实例。</li>
+<li>选择一个对象实例。</li>
+<li>按Command-3在检查器的扩展详细信息区域中显示所选实例的堆栈跟踪。如图：
+<img src="/images/memory/4/3-1.png" alt="调用栈" /></li>
+<li>此堆栈跟踪提供了负责分配实例的方法调用的完整列表。</li>
+<li>单击扩展详细信息区域中的“折叠”按钮以隐藏堆栈跟踪中的系统调用。这样可以更轻松地找到应用的方法。如下图:  <img src="/images/memory/4/6.png" alt="leaks-详情" /></li>
+<li>您的应用程序拨打的电话颜色为黑色，并且前面有用户代码图标。</li>
+<li>按住Control键并单击详细信息窗格中的条目，在弹出窗口中选择Xcode中的Reveal以在Xcode中显示源。</li>
+<li>屏幕截图显示了在Xcode中打开用户符号的弹出窗口</li>
+<li>确定分配是否有用。如果不是，那就是需要解决的废弃内存。</li>
+</ol>
+
+
+<p>从图四中我们可以看出每一次快照生成内存都有增加，我们通过输入WM过滤可以看到，相关的未被释放的对象。</p>
+
+<br>
+
+
+<h3>二、查看内存泄漏</h3>
+
+<p>Leaks概要分析模板使用Allocations 和 Leaks工具来测量应用程序中的一般内存使用情况，并检查泄漏内存，该内存已分配给不再引用和可访问的对象。和查看内存使用情况类似，只需在Instruments启动时选择Leaks模板，如图：
+<img src="/images/memory/4/5-0.png" alt="leaks" /></p>
+
+<ol>
+<li>观察时间线窗格中的Leaks仪器是否有泄漏。泄漏显示为红色条。如下图：
+<img src="/images/memory/4/5.png" alt="leaks1" /></li>
+<li>单击时间线窗格中的“泄漏”工具以在详细信息窗格中显示与泄漏相关的信息。</li>
+<li>从详细信息窗格的导航栏中的详细信息类型列表中选择“调用树”。</li>
+<li>显示与任何检测到的泄漏相关的方法调用列表。</li>
+<li>单击过滤器和配置栏中的“调用树”按钮。</li>
+<li>在出现的弹出框中，选择“反转调用树”和“隐藏系统库”。</li>
+<li>首先显示最近的方法调用。它还有助于将方法调用列表缩小到您的应用程序所做的调用。您的应用程序调用的方法调用黑色，并在用户代码图标前面。如图:
+<img src="/images/memory/4/8.png" alt="leaks2" /></li>
+<li>在调用树中，选择要调查的方法调用。</li>
+<li>按Command-3在检查器的扩展详细信息区域中显示所选方法调用的堆栈跟踪。
+<img src="/images/memory/4/6.png" alt="leaks3" /></li>
+</ol>
+
+
+<p>选择Cycles &amp; Roots > Leak Cycles 还可以查看循环引用引起的内存泄漏问题，可以查看具体的循环引用代码，并给出了对象循环引用图。如下：
+<img src="/images/memory/4/7.png" alt="leaks4" /></p>
+
+<br>
+
+
+<h3>三、总结</h3>
+
+<p>Instruments工具能够帮助我们查看APP的内存使用情况，以及内存使用中的问题。在APP的开发过程中我们可以时不时的使用Instruments来检查内存使用情况，及时发现问题并解决。</p>
+
+<br>
+
+
+<p><strong>参考链接</strong></p>
+
+<p><a href="https://help.apple.com/instruments/mac/current/">Instruments Help</a></p>
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2019 - Weimin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>
