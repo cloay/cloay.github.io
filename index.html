@@ -9,7 +9,7 @@
 	<meta name="author" content="Weimin">
 
 	
-	<meta name="description" content="Feb 27th, 2019 ios,memory iOS内存详解之OC对象的构造模式 Cocoa对象的创建分为两个阶段：分配和初始化。也就是两段构造(Two Stage Creation)的模式。没有这两个步骤，一个对象通常是不可用的。尽管几乎在所有情况下，初始化都紧跟在分配之后， &hellip;">
+	<meta name="description" content="Feb 28th, 2019 ios,memory,retain,strong,release,arc iOS内存详解之内存管理 在了解了iOS了对象创建模式之后，接下来我们看看iOS的内存管理。通过理解其内部的原理来高效的使用内存、优化程序中的代码问题。在对iOS内存管理原理深入了解之前， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -119,6 +119,46 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-02-28T23:45:00+08:00" data-updated="true" itemprop="datePublished">Feb 28<span>th</span>, 2019</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios-memory-retain-strong-release-arc/'>ios,memory,retain,strong,release,arc</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-nei-cun-guan-li/" itemprop="url">iOS内存详解之内存管理</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在了解了iOS了对象创建模式之后，接下来我们看看iOS的内存管理。通过理解其内部的原理来高效的使用内存、优化程序中的代码问题。在对iOS内存管理原理深入了解之前，我们先复习一下变量的生命周期和作用域，以及变量在内存中的分布。然后来看iOS是怎么对内存管理的以及怎么影响变量的生成和销毁的。</p>
+
+<h3>一、变量的生命周期</h3>
+
+<p>变量来源于数学，是计算机语言中能储存计算结果或能表示值抽象概念。变量可以通过变量名访问。是一种使用方便的占位符，用于引用变量数据在计算机内存中的地址。在指令式语言中，变量通常是可变的；但在纯函数式语言（如Haskell）中，变量可能是不可变（immutable）的。在一些语言中，变量可能被明确为是能表示可变状态。</p>
+
+
+		
+		<a href="/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-nei-cun-guan-li/" class="more-link">Read on &rarr;</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -307,44 +347,6 @@
 
 		
 		<a href="/blog/2017/02/27/iosdong-tai-ku-zhu-ru-shi-jian-wei-zao-wei-xin-ding-wei/" class="more-link">Read on &rarr;</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-07-20T00:37:00+08:00" data-updated="true" itemprop="datePublished">Jul 20<span>th</span>, 2016</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/blog/categories/ios-uiwebview-https-wkwebview/'>iOS,UIWebView,https,WKWebView</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/blog/2016/07/20/webview-loading-https-content/" itemprop="url">WebView Loading Https Content</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h3>iOS使用Webview加载https网页</h3>
-
-<p>项目新的需求需要在客户端中嵌入网页，以前的项目中也做过类似的功能，感觉不会有什么困难，使用WebView加载指定的URL就行了。但这次我们需要加载https页面，由于没有相关的实战经验，在整个开发过程中踩了不少的坑，现在给大家分享一下。</p>
-
-
-		
-		<a href="/blog/2016/07/20/webview-loading-https-content/" class="more-link">Read on &rarr;</a>
 	</div>
 
 </article>

@@ -1,0 +1,469 @@
+
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>iOS内存详解之内存管理 - 尚卫民的博客</title>
+	<meta name="author" content="Weimin">
+
+	
+	<meta name="description" content="iOS内存详解之内存管理 在了解了iOS了对象创建模式之后，接下来我们看看iOS的内存管理。通过理解其内部的原理来高效的使用内存、优化程序中的代码问题。在对iOS内存管理原理深入了解之前，我们先复习一下变量的生命周期和作用域，以及变量在内存中的分布。 &hellip;">
+	
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="尚卫民的博客" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://cloay.com/blog/2019/02/28/iosnei-cun-xiang-jie-zhi-nei-cun-guan-li/">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+	<script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+	<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45666042-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	<img src="http://tp2.sinaimg.cn/1908981065/180/5753928464/1" alt="Profile Picture" style="width: 160px;" />
+        <!--
+	
+	<script src="/javascripts/md5.js">
+	<script type="text/javascript">
+		$(function(){
+			$('.profilepic').append("<img src='http://tp2.sinaimg.cn/1908981065/180/5753928464/1' alt='Profile Picture' style='width: 160px;' />");
+		});
+	</script>
+	
+	-->
+</div>
+<hgroup>
+  <h1><a href="/">尚卫民的博客</a></h1>
+  
+    <h2>Passion,interest it's not the same thing.</h2>
+  
+</hgroup>
+
+<nav id="main-nav"><ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    热爱编程专注于iOS，Android，目前工作在北京。
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href="mailto:shangrody@gmail.com" title="Email">Email</a>
+		
+		
+                        <a class="weibo" href="http://weibo.com/cloay" title="weibo">Weibo</a>
+                
+		
+		
+		
+		
+			<a class="github" href="https://github.com/cloay" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+			<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			
+				
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<h1 class="title" itemprop="name">iOS内存详解之内存管理</h1>
+	<div class="entry-content" itemprop="articleBody"><p>在了解了iOS了对象创建模式之后，接下来我们看看iOS的内存管理。通过理解其内部的原理来高效的使用内存、优化程序中的代码问题。在对iOS内存管理原理深入了解之前，我们先复习一下变量的生命周期和作用域，以及变量在内存中的分布。然后来看iOS是怎么对内存管理的以及怎么影响变量的生成和销毁的。</p>
+
+<h3>一、变量的生命周期</h3>
+
+<p>变量来源于数学，是计算机语言中能储存计算结果或能表示值抽象概念。变量可以通过变量名访问。是一种使用方便的占位符，用于引用变量数据在计算机内存中的地址。在指令式语言中，变量通常是可变的；但在纯函数式语言（如Haskell）中，变量可能是不可变（immutable）的。在一些语言中，变量可能被明确为是能表示可变状态。</p>
+
+<!-- more -->
+
+
+<p>变量分为局部变量、全局变量。在面向对象编程中，对于类而言，类包含局部变量，成员变量和类变量等，变量随着类的生成而生成，消亡而消亡。对于局部变量往往存在于函数或代码段中，其生命周期即其在函数声明开始在函数执行结束时结束。其作用域即为函数体或代码段{}。对于全局变量，如类的成员变量，其生命周期和整个类一样，作用域也是整个类。看下面代码，实际分析一下各变量的生命周期：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//  SecondViewController.m</span>
+</span><span class='line'><span class="c1">//  MemoryDemo</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//  Created by cloay on 2018/11/2.</span>
+</span><span class='line'><span class="c1">//  Copyright © 2018 cloay. All rights reserved.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#import &quot;SecondViewController.h&quot;</span>
+</span><span class='line'><span class="cp">#import &quot;WMButton.h&quot;</span>
+</span><span class='line'><span class="cp">#import &quot;WMModel.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">WMSecondViewController</span> <span class="p">()</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">UIButton</span> <span class="o">*</span><span class="n">globalBtn</span><span class="p">;</span>  <span class="c1">//全局成员变量</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">assign</span><span class="p">)</span> <span class="kt">int</span> <span class="n">instanceCount</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">WMSecondViewController</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">instanceCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//局部变量1</span>
+</span><span class='line'>    <span class="n">UIButton</span> <span class="o">*</span><span class="n">localBtn</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WMButton</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithFrame:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">44</span><span class="p">)];</span>
+</span><span class='line'>    <span class="n">localBtn</span><span class="p">.</span><span class="n">tag</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">localBtn</span> <span class="nl">setBackgroundColor:</span><span class="p">[</span><span class="n">UIColor</span> <span class="n">grayColor</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">localBtn</span> <span class="nl">setTitle:</span><span class="s">@&quot;局部变量&quot;</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">localBtn</span> <span class="nl">addTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="n">localBtnOnClick</span><span class="p">)</span> <span class="nl">forControlEvents:</span><span class="n">UIControlEventTouchUpInside</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview:</span><span class="n">localBtn</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//局部变量2</span>
+</span><span class='line'>    <span class="n">WMModel</span> <span class="o">*</span><span class="n">model</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WMModel</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">model</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">@&quot;局部变量&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@ is created...&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">model</span> <span class="n">class</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WMButton</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithFrame:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">44</span><span class="p">)];</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span><span class="p">.</span><span class="n">tag</span> <span class="o">=</span> <span class="mi">1001</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span> <span class="nl">setBackgroundColor:</span><span class="p">[</span><span class="n">UIColor</span> <span class="n">grayColor</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span> <span class="nl">setTitle:</span><span class="s">@&quot;点击0&quot;</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span> <span class="nl">addTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="n">globalBtnOnClick</span><span class="p">)</span> <span class="nl">forControlEvents:</span><span class="n">UIControlEventTouchUpInside</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview:</span><span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;func viewDidLoad is end...&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">count</span><span class="p">,</span> <span class="n">count1</span><span class="p">;</span> <span class="c1">//全局变量</span>
+</span><span class='line'><span class="n">WMModel</span> <span class="o">*</span><span class="n">globalModel</span><span class="p">;</span>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">globalBtnOnClick</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">block</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">globalModel</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WMModel</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">globalModel</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">@&quot;全局变量&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">count1</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">instanceCount</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span> <span class="nl">setTitle:</span><span class="p">[</span><span class="n">NSString</span> <span class="nl">stringWithFormat:</span><span class="s">@&quot;点击%d&quot;</span><span class="p">,</span> <span class="n">count</span><span class="p">]</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">localBtnOnClick</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">globalBtn</span> <span class="nl">setTitle:</span><span class="p">[</span><span class="n">NSString</span> <span class="nl">stringWithFormat:</span><span class="s">@&quot;点击%d&quot;</span><span class="p">,</span> <span class="n">count</span><span class="p">]</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;localBtnOnClick...&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">dealloc</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@ dealloc ...&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">self</span> <span class="n">class</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从上述代码中我们可以看出定义了全局变量globalBtn它也是类SecondViewControler的成员变量，它的作用域是整个类中都可以访问，生命周期随着类的销毁而结束，在方法viewDidLoad中定义了局部变量localBtn和model。先看局部变量model的代码定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="cp">#import &quot;WMModel.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">WMModel</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">dealloc</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@ is dealloc ...&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">self</span> <span class="n">class</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>只是简单重写了dealloc方法，根据之前我们的分析。model会随着方法viewDidLoad结束而被销毁。实际的结果也是这样的：</p>
+
+<p><img src="/images/memory/3/model.png" alt="model" /></p>
+
+<p>我们再看一下WMButton的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="cp">#import &quot;WMButton.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">WMButton</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">dealloc</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%ld WMButton is dealloc ...&quot;</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">tag</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于局部变量localBtn为什么没有打印被释放的log呢？不用着急，在第三部分我们详细说明。</p>
+
+<h3>二、变量在内存中的分布</h3>
+
+<p>在了解了变量的生命周期和作用域后，下面我们看看变量的在内存中是如何分布的。
+根据之前第一篇的介绍程序在运行时会被操作系统从磁盘加载到内存中。程序启动后，程序中的变量在内存中会被划分到：栈区、堆区、全局区（静态区）、代码区、文字常量区这五个部分。这五个部分在内存的地址从高到低依次排列如下图：</p>
+
+<p><img src="/images/memory/3/memory_region.jpeg" alt="memory_region" />
+&ndash; 栈区：由编译器自动分配存放函数的参数值，局部变量的值等
+&ndash; 堆区：由程序员分配释放，若程序员不释放，程序结束时 可能 有系统收回。
+&ndash; 全局区（静态区：全局变量和静态变量是存储放在一块的，初始化的全局变量和静态变量在一个区域，未初始化的在相邻的另一个区域。程序结束后由系统释放。
+&ndash; 代码区：存放代码的二进制数据的区域
+&ndash; 文字常量区：即存放一些const申明的变量或者字符串常量等，该区域是只读的。</p>
+
+<p>根据上述我们可以画出实例对象secondVc的内存结构如：</p>
+
+<p><img src="/images/memory/3/secondVc_memory.png" alt="secondvc_memory" /></p>
+
+<h3>三、iOS内存管理</h3>
+
+<p>Objective-C使用引用计数管理内存。NSObject Protocol中定义了引用计数相关方法，在NSObject类中定义了dealloc方法，在对象释放时会自动调用。OC先前使用<strong>MRR</strong>（manual retain-release）即手动保留释放对象来管理内存，在iOS4.0时苹果推出了自动引用计数<strong>ARC</strong>（Automatic Reference Counting）来管理内存，编译器在编译时自动在代码中加入内存管理代码，不需要再手动控制。不管是MRR还是ARC其底层都是通过引用计数模型实现的。</p>
+
+<p><strong>内存管理规则</strong></p>
+
+<p>内存管理模型是基于对象的所有权。任何对象都可能拥有一个或多个所有者。只要一个对象至少有一个所有者，它就会继续在内存中存在。如果对象没有所有者，则运行时系统会自动销毁它。Cocoa设置以下策略即所有权规则：</p>
+
+<ul>
+<li>您拥有自己创建的任何对象 如使用 “alloc”, “new”, “copy”, or “mutableCopy”等方法生成的对象</li>
+<li>您可以使用retain获取对象的所有权
+通过该方法保证接收到的对象在接收到的方法中保持有效，并且该方法也可以安全地将对象返回给其调用者。您可以在两种情况下使用retain方法：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="mf">1.</span> <span class="err">在访问器方法或</span><span class="n">init</span><span class="err">方法的实现中，获取要作为属性值存储的对象的所有权</span><span class="p">;</span>
+</span><span class='line'><span class="mf">2.</span> <span class="err">防止对象因某些其他操作的副作用而失效</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>当您不再需要它时，您必须放弃您拥有的对象的所有权 您通过向对象发送release消息或autorelease消息来放弃对象的所有权。因此，在Cocoa术语中，放弃对象的所有权通常被称为“释放”对象。通常在<strong>dealloc</strong>方法中，释放拥有的对象，如类的成员变量。</li>
+<li>您必须放弃您不拥有的对象的所有权
+这只是先前明确规定的政策规则的必然结果。</li>
+</ul>
+
+
+<p><strong>对象所有权通过引用计数实现 &ndash; 通常在retain方法之后称为“保留计数” 。每个对象都有一个保留计数。</strong></p>
+
+<ul>
+<li>创建对象时，其保留计数为1。</li>
+<li>向对象发送retain消息时，其保留计数将增加1。</li>
+<li>向对象发送release消息时，其保留计数减1。</li>
+<li>向对象发送autorelease消息时，其保留计数在当前自动释放池块的末尾减1。</li>
+<li>如果对象的保留计数减少到零，则将其取消分配。</li>
+</ul>
+
+
+<p>内存管理通常都是对单个对象来说的，但实际上是管理是对象引用图:</p>
+
+<br>
+
+
+<p><img src="/images/memory/3/memory_management_2x.png" alt="memory_management" /></p>
+
+<br>
+
+
+<p><strong>将对象添加到集合（例如数组，字典或集合）时，集合将获得对象的所有权。当从集合中移除对象或集合本身被释放时，集合将放弃所有权。</strong>
+常见的场景都是显示的调用集合的相关方法，但还有一些情况如将view视图对象添加到view上时，调用父View的addSubview方法会隐式调用数组的addObject方法（个人猜测）。这时候父View会持有view子视图，直到父视图释放。在苹果的官方文档中对addSubview方法也有相关说明：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">This</span> <span class="n">method</span> <span class="n">establishes</span> <span class="n">a</span> <span class="n">strong</span> <span class="n">reference</span> <span class="n">to</span> <span class="n">view</span> <span class="n">and</span> <span class="n">sets</span> <span class="n">its</span> <span class="n">next</span> <span class="n">responder</span> <span class="n">to</span> <span class="n">the</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">which</span> <span class="n">is</span> <span class="n">its</span> <span class="n">new</span> <span class="n">superview</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所以localBtn直到secondVc释放了之后，才释放如图：
+<img src="/images/memory/3/localbtn.png" alt="localbtn" /></p>
+
+<p>苹果强烈建议开发者使用ARC。因为使用ARC不需要手动添加release和retain方法，编译器会自动加入相关代码，在编译器内部使用保留和释放操作。使得开发人员把注意力集中到真正的代码编写中而无需关系内存管理问题。</p>
+
+<p>虽然苹果建议我们使用ARC而不需要了解内存管理的底层原理，但这个建议大家还是不要听了！相信大家都深有体会！！！</p>
+
+<br>
+
+
+<br>
+
+
+<p><strong>参考链接</strong></p>
+
+<ul>
+<li><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011i">高级内存管理编程指南</a></li>
+<li><a href="https://www.cnblogs.com/VIPler/p/4282584.html">关于内存地址和内存空间的理解</a></li>
+</ul>
+
+
+<br>
+
+
+<br>
+
+
+<br>
+
+</div>
+
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+
+</div>
+			</div>
+			<footer id="footer" class="inner"><p>
+  Copyright &copy; 2019 - Weimin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a></footer>
+			
+
+
+
+
+
+
+
+
+
+
+
+		</div>
+	</div>
+</body>
+</html>
